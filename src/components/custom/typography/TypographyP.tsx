@@ -1,9 +1,6 @@
+import { cn } from "@/lib/utils";
 import { TypographyType } from "./TypographyH1";
 
 export default function TypographyP({ content, className }: TypographyType) {
-  return (
-    <p className={"leading-7 [&:not(:first-child)]:mt-6 " + className}>
-      {content}
-    </p>
-  );
+  return <p className={cn("leading-7", className)}>{content}</p>;
 }

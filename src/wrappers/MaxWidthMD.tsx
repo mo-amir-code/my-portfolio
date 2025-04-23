@@ -9,7 +9,7 @@ const MaxWidthMD = ({
   className?: string;
 }) => {
   return (
-    <section className={cn(`mx-auto max-w-2xl`, className)}>{children}</section>
+    <section className={cn(`mx-auto max-w-[700px] px-4`, className)}>{children}</section>
   );
 };
 
