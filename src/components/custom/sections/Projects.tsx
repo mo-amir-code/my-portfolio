@@ -1,6 +1,6 @@
 import { MaxWidthMD } from "@/wrappers"
 import { TypographyH2 } from "../typography"
-import { EvervaultCard } from "../common"
+import { ProjectCard } from "../common"
 
 
 const Projects = () => {
@@ -8,16 +8,42 @@ const Projects = () => {
     <MaxWidthMD>
         <div className="space-y-4" >
             <TypographyH2 content="Projects" className="font-medium" />
-            <div className="grid md:grid-cols-2 gap-4" >
-                <EvervaultCard
-                  title="Motion Components"
+            <div className="space-y-8" >
+                <ProjectCard
+                  title="Motion"
                   content="professional and beutiful franer motion componenets built with nextjs and tailwincss"
-                  tags={["tailwind", "nextjs", "nodejs"]}
+                  website="/#"
+                  github="/#"
                  />
-                <EvervaultCard
-                  title="Motion Components"
+                <ProjectCard
+                  title="Motion"
                   content="professional and beutiful franer motion componenets built with nextjs and tailwincss"
-                  tags={["tailwind", "nextjs", "nodejs"]}
+                  website="/#"
+                  github="/#"
+                 />
+                <ProjectCard
+                  title="Motion"
+                  content="professional and beutiful franer motion componenets built with nextjs and tailwincss"
+                  website="/#"
+                  github="/#"
+                 />
+                <ProjectCard
+                  title="Motion"
+                  content="professional and beutiful franer motion componenets built with nextjs and tailwincss"
+                  website="/#"
+                  github="/#"
+                 />
+                <ProjectCard
+                  title="Motion"
+                  content="professional and beutiful franer motion componenets built with nextjs and tailwincss"
+                  website="/#"
+                  github="/#"
+                 />
+                <ProjectCard
+                  title="Motion"
+                  content="professional and beutiful franer motion componenets built with nextjs and tailwincss"
+                  website="/#"
+                  github="/#"
                  />
             </div>
         </div>
