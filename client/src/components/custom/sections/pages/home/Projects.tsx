@@ -34,7 +34,7 @@ const Projects = () => {
           />
 
           <div className="flex items-center justify-center">
-            <SeeMore href="projects" />
+            <SeeMore href="projects" text="Projects" />
           </div>
         </div>
       </div>

@@ -12,7 +12,7 @@ const Blogs = () => {
           <BlogPostCard />
 
           <div className="flex items-center justify-center">
-            <SeeMore href="blog" />
+            <SeeMore href="blog" text="Blog" />
           </div>
         </div>
       </div>
