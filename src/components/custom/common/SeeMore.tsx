@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-const SeeMore = () => {
+const SeeMore = ({ href }: { href: string }) => {
   return (
     <Link
       type="button"
       className="flex items-center text-sm my-4 mx-auto px-4 py-2 rounded-md font-medium text-gray-900 dark:text-gray-100"
-      href="/blog"
+      href={`/${href}`}
     >
       See All Blogs
       <svg

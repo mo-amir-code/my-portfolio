@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/custom/header";
+import { Footer } from "@/components/custom/common";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
         >
           <Header />
           <div className="pt-28 font-dm-sans">{children}</div>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

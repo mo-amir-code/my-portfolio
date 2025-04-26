@@ -4,13 +4,7 @@ import { Menu, X } from "lucide-react";
 import React from "react";
 import { cn } from "@/lib/utils";
 import ToggleTheme from "@/components/custom/buttons/ToggleTheme";
-
-const menuItems = [
-  { name: "Home", href: "#home" },
-  { name: "Blog", href: "#blog" },
-  { name: "Resources", href: "#resources" },
-  { name: "Projects", href: "#projects" },
-];
+import { menuItems } from "@/lib/data";
 
 const Header = () => {
   const [menuState, setMenuState] = React.useState(false);
@@ -56,6 +50,7 @@ const Header = () => {
                   <li key={index}>
                     <Link
                       href={item.href}
+                      target={item.href.includes("drive.google.com") ? "_blank" : "_self"}
                       className="text-muted-foreground hover:text-accent-foreground block duration-150"
                     >
                       <span>{item.name}</span>

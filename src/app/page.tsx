@@ -1,4 +1,4 @@
-import { Blogs, Hero, Projects } from "@/components/custom/sections";
+import { Blogs, Hero, Projects } from "@/components/custom/sections/pages/home";
 
 export default function Home() {
 

@@ -1,8 +1,7 @@
 import { MaxWidthMD } from "@/wrappers";
-import { TypographyCode, TypographyH1, TypographyP } from "../typography";
-import { Profile } from "../common";
+import { TypographyCode, TypographyH1, TypographyP } from "../../../typography";
+import { Profile } from "../../../common";
 import profileImg from "@/assests/profile.jpg";
-import Link from "next/link";
 import { GITHUB_URL, LINKEDIN_URL, TWITTER_URL, YOUTUBE_URL } from "@/lib/data";
 import { LinkPreview } from "@/components/ui";
 

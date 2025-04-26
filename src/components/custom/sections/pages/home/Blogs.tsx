@@ -1,6 +1,6 @@
 import { MaxWidthMD } from "@/wrappers";
-import { TypographyH2 } from "../typography";
-import { BlogPostCard, SeeMore } from "../common";
+import { TypographyH2 } from "../../../typography";
+import { BlogPostCard, SeeMore } from "../../../common";
 
 const Blogs = () => {
   return (
@@ -12,7 +12,7 @@ const Blogs = () => {
           <BlogPostCard />
 
           <div className="flex items-center justify-center">
-            <SeeMore />
+            <SeeMore href="blog" />
           </div>
         </div>
       </div>
