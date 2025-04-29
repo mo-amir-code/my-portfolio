@@ -12,9 +12,9 @@ export {
 
 
 // Schema Data
-const SOCIALS_NAME = ["website", "github", "youtube", "twitter", "linkedin", "reddit"]
-const USERS_ROLE = ["user", "admin"]
-const BLOG_STATUS = ["published", "draft"]
+const SOCIALS_NAME = ["website", "github", "youtube", "twitter", "linkedin", "reddit"] as const;
+const USERS_ROLE = ["user", "admin"] as const;
+const BLOG_STATUS = ["published", "draft"] as const;
 
 export {
     SOCIALS_NAME,

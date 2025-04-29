@@ -8,6 +8,7 @@ import {
 interface RegisterUserType {
   fullName: FullNameType;
   email: string;
+  password: string
   socials?: SocialDetailsType[];
   headline?: string;
   about?: string;
@@ -23,8 +24,8 @@ interface FindByIdAndUpdateUserType {
   password?: string;
   isVerified?: string;
   session?: string;
-  otp?: string;
-  otpToken?: string;
+  otp?: string | undefined;
+  otpToken?: string | undefined;
 }
 
 export { RegisterUserType, FindByIdAndUpdateUserType };
