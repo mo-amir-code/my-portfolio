@@ -1,18 +1,9 @@
 import mongoose, { Schema } from "mongoose";
-import { BlogSchemaType, ProjectSchemaType } from "./types";
-import {
-  BLOG_SCHEMA_NAME,
-  BLOG_STATUS,
-  USER_SCHEMA_NAME,
-} from "../../config/schemas";
+import { BlogSchemaType } from "./types";
+import { BLOG_SCHEMA_NAME, BLOG_STATUS } from "../../config/schemas";
 
 const blogSchema: Schema<BlogSchemaType> = new Schema<BlogSchemaType>(
   {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: USER_SCHEMA_NAME,
-      required: [true, "UserId is required"],
-    },
     title: { type: String, required: [true, "Title is required"] },
     content: { type: Object, required: [true, "Content is required"] },
     coverImage: { type: String, required: [true, "Cover image is required"] },

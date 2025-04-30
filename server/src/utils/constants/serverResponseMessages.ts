@@ -37,16 +37,30 @@ export {
 
 // PROJECT
 const PROJECT_CREATED_MSG = "Project created successfully";
-const PROJECT_FECTHED_MSG = "Project(s) fetched"
+const PROJECT_FECTHED_MSG = "Project(s) fetched";
 const PROJECT_NOT_FOUND_MSG = "Project is not exist";
-const PROJECT_UPDATED_MSG = "Project has been updated"
-const PROJECT_DELETED_MSG = "Project has been deleted"
-
+const PROJECT_UPDATED_MSG = "Project has been updated";
+const PROJECT_DELETED_MSG = "Project has been deleted";
 
 export {
   PROJECT_CREATED_MSG,
   PROJECT_FECTHED_MSG,
   PROJECT_NOT_FOUND_MSG,
   PROJECT_UPDATED_MSG,
-  PROJECT_DELETED_MSG
-}
+  PROJECT_DELETED_MSG,
+};
+
+// BLOG
+const BLOG_CREATED_MSG = "New blog added";
+const BLOG_FETCHED_MSG = "Blog(s) fetched";
+const BLOG_DELETED_MSG = "Blog deleted";
+const BLOG_NOT_FOUND_MSG = "Blog is not exist";
+const BLOG_UPDATED_MSG = "Blog has been updated";
+
+export {
+  BLOG_CREATED_MSG,
+  BLOG_DELETED_MSG,
+  BLOG_FETCHED_MSG,
+  BLOG_NOT_FOUND_MSG,
+  BLOG_UPDATED_MSG,
+};

@@ -46,7 +46,6 @@ interface ProjectSchemaType extends MongoDBSchemaDefaultFieldType {
 }
 
 interface BlogSchemaType extends MongoDBSchemaDefaultFieldType {
-    userId: Schema.Types.ObjectId
     title: string
     content: object
     coverImage: string

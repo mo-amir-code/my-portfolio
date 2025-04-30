@@ -1,4 +1,3 @@
-import { Schema } from "mongoose";
 import { Blog } from "../schemas"; // adjust the path if Blog model is in a different location
 import { CreateBlogType, FindByIdAndUpdateBlogType } from "./types";
 import { BlogSchemaType } from "../schemas/types";
@@ -8,7 +7,7 @@ const createBlog = async (data: CreateBlogType): Promise<BlogSchemaType> => {
 };
 
 const deleteBlogById = async (
-  blogId: Schema.Types.ObjectId
+  blogId: string
 ): Promise<BlogSchemaType | null> => {
   return await Blog.findByIdAndDelete(blogId);
 };

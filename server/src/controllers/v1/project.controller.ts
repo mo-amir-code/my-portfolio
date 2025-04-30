@@ -20,7 +20,7 @@ import {
   PROJECT_NOT_FOUND_MSG,
   PROJECT_UPDATED_MSG,
 } from "../../utils/constants/serverResponseMessages";
-import { Project, User } from "../../db/schemas";
+import { Project } from "../../db/schemas";
 import { NOT_FOUND_STATUS_CODE } from "../../utils/constants/common";
 
 // Create Project
@@ -38,8 +38,7 @@ const createNewProject = apiHandler(async (req, res) => {
 
 // Get All Projects
 const getAllProjects = apiHandler(async (_req, res) => {
-  const admin = await User.findOne({ role: "admin" });
-  const projects = await Project.find({ userId: admin._id });
+  const projects = await Project.find();
 
   return ok({
     res,

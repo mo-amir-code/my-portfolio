@@ -4,10 +4,10 @@ import { SOCIALS_NAME } from "../../config/schemas";
 
 const createProjectZodSchema = z.object({
   body: z.object({
-    title: z.number({
+    title: z.string({
       required_error: ZOD_REQUIRED_ERR.replace("{field}", "Title"),
     }),
-    desc: z.number({
+    desc: z.string({
       required_error: ZOD_REQUIRED_ERR.replace("{field}", "Description"),
     }),
     users: z.number().optional(),
@@ -18,9 +18,13 @@ const createProjectZodSchema = z.object({
       })
     ),
     images: z.array(z.string()).optional(),
-    completionDate: z.date({
-      required_error: ZOD_REQUIRED_ERR.replace("{field}", "Completion date"),
-    }),
+    completionDate: z
+      .string({
+        required_error: ZOD_REQUIRED_ERR.replace("{field}", "Completion date"),
+      })
+      .refine((val) => !isNaN(Date.parse(val)), {
+        message: "Invalid date format. Use YYYY-MM-DD",
+      }),
   }),
 });
 

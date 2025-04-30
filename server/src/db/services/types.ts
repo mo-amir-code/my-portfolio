@@ -55,7 +55,6 @@ export type { CreateProjectType, FindByIdAndUpdateProjectType };
 
 // Blog's Schema
 interface CreateBlogType {
-  userId: Schema.Types.ObjectId;
   title: string;
   content: object;
   coverImage: string;
