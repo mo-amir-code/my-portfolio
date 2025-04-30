@@ -14,7 +14,7 @@ const blogSchema: Schema<BlogSchemaType> = new Schema<BlogSchemaType>(
       required: [true, "UserId is required"],
     },
     title: { type: String, required: [true, "Title is required"] },
-    content: { type: Object, required: [true, "Object is required"] },
+    content: { type: Object, required: [true, "Content is required"] },
     coverImage: { type: String, required: [true, "Cover image is required"] },
     slug: { type: String, required: [true, "Slug is required"], unique: true },
     views: { type: Number, default: 0 },

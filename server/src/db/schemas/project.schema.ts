@@ -7,8 +7,7 @@ const projectSchema: Schema<ProjectSchemaType> = new Schema<ProjectSchemaType>(
     title: { type: String, required: [true, "Title is required"] },
     desc: {
       type: String,
-      required: [true, "Description is required"],
-      unique: true,
+      required: [true, "Description is required"]
     },
     users: { type: Number, default: 0 },
     socials: [
@@ -22,6 +21,7 @@ const projectSchema: Schema<ProjectSchemaType> = new Schema<ProjectSchemaType>(
       },
     ],
     images: [{ type: String }],
+    completionDate: { type: Date, required: [true, "Completion date is required"] }
   },
   { timestamps: true }
 );

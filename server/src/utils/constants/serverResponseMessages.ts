@@ -35,37 +35,18 @@ export {
   SESSION_EXPIRED_RES_MSG,
 };
 
-// Folder
-const FOLDER_CREATED_RES_MSG = "Folder created";
-const DUPLICATE_FOLDER_RES_MSG = "Folder name already exists";
-const FOLDER_DELETED_RES_MSG = "Folder/Files deleted";
-const FOLDER_UPDATE_RES_MSG = "Folder updated";
-const FOLDER_FETCHED_RES_MSG = "Folder fetched";
-const FOLDER_FILES_FETCHED_RES_MSG = "Folder files fetched";
+// PROJECT
+const PROJECT_CREATED_MSG = "Project created successfully";
+const PROJECT_FECTHED_MSG = "Project(s) fetched"
+const PROJECT_NOT_FOUND_MSG = "Project is not exist";
+const PROJECT_UPDATED_MSG = "Project has been updated"
+const PROJECT_DELETED_MSG = "Project has been deleted"
+
 
 export {
-  FOLDER_CREATED_RES_MSG,
-  FOLDER_DELETED_RES_MSG,
-  FOLDER_UPDATE_RES_MSG,
-  FOLDER_FETCHED_RES_MSG,
-  FOLDER_FILES_FETCHED_RES_MSG,
-  DUPLICATE_FOLDER_RES_MSG
-};
-
-// Chats
-const CHATS_ADDED_RES_MSG = "Chats added";
-
-export { CHATS_ADDED_RES_MSG };
-
-// Prompts
-const PROMPT_ADDED_RES_MSG = "Prompt added";
-const PROMPTS_FETCHED_RES_MSG = "Prompts fetched";
-const PROMPT_UPDATED_RES_MSG = "Prompt updated";
-const PROMPT_DUPLICATE_RES_MSG = "Prompt already exists"
-
-export {
-  PROMPT_ADDED_RES_MSG,
-  PROMPTS_FETCHED_RES_MSG,
-  PROMPT_UPDATED_RES_MSG,
-  PROMPT_DUPLICATE_RES_MSG
-};
+  PROJECT_CREATED_MSG,
+  PROJECT_FECTHED_MSG,
+  PROJECT_NOT_FOUND_MSG,
+  PROJECT_UPDATED_MSG,
+  PROJECT_DELETED_MSG
+}

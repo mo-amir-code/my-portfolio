@@ -6,7 +6,7 @@ type FromType = "forgot-password" |  undefined
 declare global {
   namespace Express {
     interface Request {
-      user?: any; // Add the 'user' property of any type
+      user: any; // Add the 'user' property of any type
       from: FromType
     }
   }

@@ -42,6 +42,7 @@ interface ProjectSchemaType extends MongoDBSchemaDefaultFieldType {
     users: number
     socials: SocialDetailsType[]
     images: string[]
+    completionDate: Date
 }
 
 interface BlogSchemaType extends MongoDBSchemaDefaultFieldType {

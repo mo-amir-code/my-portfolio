@@ -1,7 +1,6 @@
 import { Schema } from "mongoose";
 import {
   createUser,
-  findUserByIdAndUpdate,
   getUserByIDorEmail,
 } from "../../db/services/user.db.service.js";
 import {
@@ -9,7 +8,10 @@ import {
   ErrorHandlerClass,
   ok,
 } from "../../services/errorHandling/index.js";
-import { generateRefreshAndAccessToken, isJwtTokenExpired } from "../../services/jwt/index.js";
+import {
+  generateRefreshAndAccessToken,
+  isJwtTokenExpired,
+} from "../../services/jwt/index.js";
 import {
   BAD_REQUEST_STATUS_CODE,
   FORGOT_PASSWORD_REQUEST_BODY_MSG,
@@ -72,7 +74,9 @@ const registerUser = apiHandler(async (req, res, next) => {
   } else if (isUserExist) {
     isUserExist.password = await convertToHash(data.password);
     await isUserExist.save();
-    req.user.id = isUserExist._id;
+    req.user = {
+      id: isUserExist._id,
+    };
     return next();
   } else {
     const newData = {
@@ -80,7 +84,9 @@ const registerUser = apiHandler(async (req, res, next) => {
       password: await convertToHash(data.password),
     };
     const newUser = await createUser(newData);
-    req.user.id = newUser._id;
+    req.user = {
+      id: newUser._id,
+    };
     return next();
   }
 });
@@ -265,7 +271,9 @@ const forgotPassword = apiHandler(async (req, res, next) => {
     return next(new ErrorHandlerClass(USER_IS_NOT_REGISTERED_RES_MSG, 400));
   }
 
-  req.user.id = user._id;
+  req.user = {
+    id: user._id,
+  };
   req.from = "forgot-password";
   next();
 });
@@ -347,8 +355,8 @@ const handleSetCookies = async ({
 
   let userToken = user.session;
 
-  if(!userToken) userToken = refreshToken;
-  else if(isJwtTokenExpired(userToken)) userToken = refreshToken;
+  if (!userToken) userToken = refreshToken;
+  else if (isJwtTokenExpired(userToken)) userToken = refreshToken;
 
   user.session = userToken;
 
@@ -356,7 +364,7 @@ const handleSetCookies = async ({
 
   res.cookie(ACCESS_TOKEN_NAME, accessToken, {
     ...accessCookieOptions,
-    domain: BASE_DOMAIN_URL,
+    domain: COOKIE_ROOT_DOMAIN,
   });
 };
 
@@ -366,5 +374,5 @@ export {
   sendOTP,
   verifyOTP,
   forgotPassword,
-  resetPassword
+  resetPassword,
 };

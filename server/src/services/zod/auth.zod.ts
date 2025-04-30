@@ -20,19 +20,17 @@ const registerUserZodSchema = z.object({
         required_error: ZOD_REQUIRED_ERR.replace("{field}", "Password"),
       })
       .min(6, "Password length must be at least 6 characters"),
-    socials: z.array(object({
-      type: z.enum(SOCIALS_NAME),
-      src: z.string()
-    })).optional(),
-    headline: z
-      .string()
+    socials: z
+      .array(
+        object({
+          type: z.enum(SOCIALS_NAME),
+          src: z.string(),
+        })
+      )
       .optional(),
-    about: z
-      .string()
-      .optional(),
-    role: z
-      .enum(USERS_ROLE)
-      .optional(),
+    headline: z.string().optional(),
+    about: z.string().optional(),
+    role: z.enum(USERS_ROLE).optional(),
   }),
 });
 
@@ -83,24 +81,10 @@ const resetPasswordZodSchema = z.object({
   }),
 });
 
-const autoAuthZodSchema = z.object({
-  body: z.object({
-    email: z
-      .string({
-        required_error: ZOD_REQUIRED_ERR.replace("{field}", "Email"),
-      })
-      .email("Not a valid email"),
-    name: z.string({
-      required_error: ZOD_REQUIRED_ERR.replace("{field}", "Name"),
-    }),
-  }),
-});
-
 export {
   registerUserZodSchema,
   signInUserZodSchema,
   verifyOTPZodSchema,
   forgotPasswordZodSchema,
   resetPasswordZodSchema,
-  autoAuthZodSchema,
 };

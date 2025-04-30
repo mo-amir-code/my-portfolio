@@ -6,7 +6,7 @@ import { APP_PORT, ENVIRONMENT } from "./config/constants.js";
 
 const numCPUs = availableParallelism();
 
-if (cluster.isPrimary && ENVIRONMENT !== "VERCEL_PRODUCTION") {
+if (cluster.isPrimary && ENVIRONMENT !== "vercel") {
     console.log(`Primary ${process.pid} is running`);
 
     for (let i = 0; i < numCPUs; i++) {
