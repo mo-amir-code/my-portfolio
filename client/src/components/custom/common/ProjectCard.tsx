@@ -1,5 +1,6 @@
-import React from "react";
-import { TypographyH4, TypographyP } from "../typography";
+"use client"
+import React, { useEffect, useState } from "react";
+import { TypographyP } from "../typography";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -18,9 +19,18 @@ export default function CustomCard({
   website,
   github,
 }: ProjectCardType) {
+  const [gh, setGH] = useState<string[]>([]);
+
+  useEffect(() => {
+    setGH(github ? github.split("#") : []);
+  }, []);
+
   return (
     <div className="relative md:max-w-[60%] space-y-2">
-      <TypographyP content={title + ` (${users} users)`} className="text-sm" />
+      <TypographyP
+        content={title + `${users > 0 ? `(${users}+ users)` : ""} `}
+        className="text-sm"
+      />
       <TypographyP
         content={content}
         className="text-muted-foreground text-sm"
@@ -31,20 +41,24 @@ export default function CustomCard({
           <Link
             href={website}
             className="flex items-center gap-1 hover:underline"
+            target="_blank"
           >
             <EarthIcon />
             <TypographyP content="Website" className="text-sm" />
           </Link>
         )}
-        {!!github && (
-          <Link
-            href={github}
-            className="flex items-center gap-1 hover:underline"
-          >
-            <GithubIcon />
-            <TypographyP content="View Repo" className="text-sm" />
-          </Link>
-        )}
+        {!!github &&
+          gh.map((navLink, idx) => (
+            <Link
+              key={idx}
+              href={navLink}
+              className="flex items-center gap-1 hover:underline"
+              target="_blank"
+            >
+              <GithubIcon />
+              <TypographyP content="View Repo" className="text-sm" />
+            </Link>
+          ))}
       </div>
     </div>
   );

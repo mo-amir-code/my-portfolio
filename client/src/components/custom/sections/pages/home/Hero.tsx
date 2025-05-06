@@ -7,7 +7,7 @@ import { LinkPreview } from "@/components/ui";
 
 const Hero = () => {
   return (
-    <MaxWidthMD className="pt-4">
+    <MaxWidthMD id="home" className="pt-4">
       <div className="flex justify-between flex-col-reverse md:flex-row gap-4 md:gap-0">
         <div className="flex-[0.8]">
           <div>
@@ -22,12 +22,12 @@ const Hero = () => {
                 content=", Learning "
                 className="text-muted-foreground"
               />
-              <TypographyCode content="DSA" />
+              <TypographyCode content="Web3" />
             </div>
 
             <div className="leading-7 translate-y-4 md:max-w-[90%] opacity-65">
               <span className="text-muted-foreground">
-                A Full Stack Engineer, Freelancer and smart problem solver. Find me on
+                A Full Stack Engineer, Freelancer and a problem solver. Find me on
               </span>
               <LinkPreview url={TWITTER_URL}>
                 <span>{" "}Twitter,</span>

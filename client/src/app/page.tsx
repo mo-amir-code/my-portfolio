@@ -1,11 +1,10 @@
-import { Blogs, Hero, Projects } from "@/components/custom/sections/pages/home";
+import { Hero, Projects } from "@/components/custom/sections/pages/home";
 
 export default function Home() {
-
   return (
-    <main className="space-y-12" >
+    <main className="space-y-12">
       <Hero />
-      <Blogs />
+      {/* <Blogs /> */}
       <Projects />
     </main>
   );

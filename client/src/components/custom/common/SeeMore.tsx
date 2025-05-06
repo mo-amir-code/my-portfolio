@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-const SeeMore = ({ text, href }: { text:string, href: string }) => {
+const SeeMore = ({ text, _href }: { text:string, _href?: string }) => {
   return (
-    <Link
-      type="button"
+    <div
+      // type="button"
       className="flex items-center text-sm my-4 mx-auto px-4 py-2 rounded-md font-medium text-gray-900 dark:text-gray-100"
-      href={`/${href}`}
+      // href={`/${href}`}
     >
       See All {text}
       <svg
@@ -22,7 +22,7 @@ const SeeMore = ({ text, href }: { text:string, href: string }) => {
           d="M19 9l-7 7-7-7"
         ></path>
       </svg>
-    </Link>
+    </div>
   );
 };
 

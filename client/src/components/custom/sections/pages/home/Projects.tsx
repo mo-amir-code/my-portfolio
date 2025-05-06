@@ -1,41 +1,39 @@
+"use client";
 import { MaxWidthMD } from "@/wrappers";
-import { TypographyH2 } from "../../../typography";
+import { TypographyH3 } from "../../../typography";
 import { ProjectCard, SeeMore } from "../../../common";
+import { projectsData } from "@/lib/data";
+import { useState } from "react";
 
 const Projects = () => {
-  return (
-    <MaxWidthMD>
-      <div className="space-y-4">
-        <TypographyH2 content="Projects" className="font-medium" />
-        <div className="space-y-8">
-          <ProjectCard
-            title="Motion"
-            content="professional and beutiful franer motion componenets built with nextjs and tailwincss"
-            website="/#"
-            github="/#"
-          />
-          <ProjectCard
-            title="Motion"
-            content="professional and beutiful franer motion componenets built with nextjs and tailwincss"
-            website="/#"
-            github="/#"
-          />
-          <ProjectCard
-            title="Motion"
-            content="professional and beutiful franer motion componenets built with nextjs and tailwincss"
-            website="/#"
-            github="/#"
-          />
-          <ProjectCard
-            title="Motion"
-            content="professional and beutiful franer motion componenets built with nextjs and tailwincss"
-            website="/#"
-            github="/#"
-          />
+  const [isExpand, setIsExpand] = useState<boolean>(false);
 
-          <div className="flex items-center justify-center">
-            <SeeMore href="projects" text="Projects" />
-          </div>
+  return (
+    <MaxWidthMD id="projects">
+      <div className="space-y-4">
+        <TypographyH3 content="Projects" className="font-medium" />
+        <div className="space-y-8">
+          {(isExpand ? projectsData : projectsData.slice(0, 2)).map(
+            ({ title, content, website, github, users }, idx) => (
+              <ProjectCard
+                key={idx}
+                title={title}
+                content={content}
+                website={website}
+                github={github}
+                users={users}
+              />
+            )
+          )}
+
+          {!!!isExpand && (
+            <div
+              onClick={() => setIsExpand(true)}
+              className="flex items-center justify-center cursor-pointer"
+            >
+              <SeeMore text="Projects" />
+            </div>
+          )}
         </div>
       </div>
     </MaxWidthMD>

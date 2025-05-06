@@ -25,9 +25,9 @@ const Header = () => {
       >
         <div
           className={cn(
-            "mx-auto mt-2 max-w-4xl px-6 transition-all duration-300 md:px-12",
+            "mx-auto mt-2 max-w-[770px] px-6 transition-all duration-300 md:px-12",
             isScrolled &&
-              "bg-background/50 max-w-4xl rounded-2xl border backdrop-blur-lg md:px-5"
+              "bg-background/50 max-w-[700px] rounded-2xl border backdrop-blur-lg md:px-5"
           )}
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
@@ -50,7 +50,11 @@ const Header = () => {
                   <li key={index}>
                     <Link
                       href={item.href}
-                      target={item.href.includes("drive.google.com") ? "_blank" : "_self"}
+                      target={
+                        item.href.includes("drive.google.com")
+                          ? "_blank"
+                          : "_self"
+                      }
                       className="text-muted-foreground hover:text-accent-foreground block duration-150"
                     >
                       <span>{item.name}</span>

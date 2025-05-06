@@ -43,7 +43,7 @@ export default function RootLayout({
         >
           <Header />
           <div className="pt-28 font-dm-sans">{children}</div>
-          <Footer />
+          {/* <Footer /> */}
         </ThemeProvider>
       </body>
     </html>
