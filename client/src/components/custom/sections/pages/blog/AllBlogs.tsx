@@ -1,6 +1,6 @@
 import { MaxWidthMD } from "@/wrappers";
 import { TypographyH2 } from "../../../typography";
-import { BlogPostCard, SeeMore } from "../../../common";
+import { BlogPostCard } from "../../../common";
 
 const AllBlogs = () => {
   return (
