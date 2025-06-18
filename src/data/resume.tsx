@@ -86,7 +86,7 @@ export const DATA = {
 
   work: [
     {
-      company: "House of Communities",
+      company: "HOC",
       href: "https://myhoc.in/",
       badges: [],
       location: "Remote",
@@ -112,7 +112,7 @@ export const DATA = {
   ],
   education: [
     {
-      school: "G.L. Bajaj Greater Noida (Affiliated with AKTU)",
+      school: "G.L. Bajaj",
       href: "https://www.glbitm.org",
       degree: "Master of Computer Applications (MCA)",
       logoUrl: "/gl.jpg",
@@ -120,7 +120,7 @@ export const DATA = {
       end: "2026",
     },
     {
-      school: "RBMI Bareilly (Affiliated with MJPRU)",
+      school: "RBMI",
       href: "https://rbmi.in/",
       degree: "Bachelor of Computer Applications (BCA)",
       logoUrl: "/rbmi.jpeg",
