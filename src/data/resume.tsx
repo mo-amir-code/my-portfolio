@@ -1,16 +1,17 @@
 import { Icons } from "@/components/icons";
-import { HomeIcon, NotebookIcon } from "lucide-react";
+import { HomeIcon } from "lucide-react";
 
 export const DATA = {
   name: "Mo Amir",
-  initials: "DV",
-  url: "https://dillion.io",
+  initials: "MA",
+  url: "https://mekyu.dev",
   location: "Greater Noida",
-  locationLink: "https://www.google.com/maps/place/sanfrancisco",
+  locationLink:
+    "https://www.google.com/maps/place/Greater+Noida,+Uttar+Pradesh",
   description:
-    "Pending.",
+    "Builder mindset with a developer’s toolkit. Always shipping, always learning.",
   summary:
-    "[Pending](/#education).",
+    "Started with curiosity, stayed for the bugs. I’ve worked on freelance and personal projects that taught me more than any course could. Right now, I’m deep into full-stack dev, writing clean logic, and slowly falling in love with the terminal.[](/#education)",
   avatarUrl: "/me.jpg",
   skills: [
     "React",
@@ -86,6 +87,18 @@ export const DATA = {
 
   work: [
     {
+      company: "Freelancer",
+      href: "https://myhoc.in/",
+      badges: [],
+      location: "Remote",
+      title: "Full Stack Developer",
+      logoUrl: "",
+      start: "July 2024",
+      end: "Jan 2025",
+      description:
+        "Cloned three casino-style games—Dragon Tiger, Trenball, and Okwin—using React and JavaScript, replicating real gameplay mechanics with animations, betting timers, and round simulations. Included a control system to simulate outcomes and built dynamic game states that mirror real-world platforms.",
+    },
+    {
       company: "HOC",
       href: "https://myhoc.in/",
       badges: [],
@@ -130,32 +143,106 @@ export const DATA = {
   ],
   projects: [
     {
-      title: "Chat Collect",
-      href: "https://chatcollect.com",
-      dates: "Jan 2024 - Feb 2024",
+      title: "ChatGPT Manager",
+      href: "https://chromewebstore.google.com/detail/chatgpt-manager/ngdjiegldihfcmiccchkaockgjacbbjm",
+      dates: "Feb 2025 - March 2025",
       active: true,
       description:
-        "With the release of the [OpenAI GPT Store](https://openai.com/blog/introducing-the-gpt-store), I decided to build a SaaS which allows users to collect email addresses from their GPT users. This is a great way to build an audience and monetize your GPT API usage.",
+        "A powerful browser extension to search, organize, tag, and export your ChatGPT conversations with ease.",
       technologies: [
-        "Next.js",
+        "React.js",
         "Typescript",
-        "PostgreSQL",
-        "Prisma",
+        "Plasmo",
         "TailwindCSS",
-        "Stripe",
-        "Shadcn UI",
-        "Magic UI",
+        "Node.js",
+        "MongoDB",
+        "Redis",
       ],
       links: [
         {
           type: "Website",
-          href: "https://chatcollect.com",
+          href: "https://chromewebstore.google.com/detail/chatgpt-manager/ngdjiegldihfcmiccchkaockgjacbbjm",
           icon: <Icons.globe className="size-3" />,
         },
       ],
-      image: "",
-      video:
-        "https://pub-83c5db439b40468498f97946200806f7.r2.dev/chat-collect.mp4",
+      image: "https://img.youtube.com/vi/xzAYtD5INAs/hqdefault.jpg",
+      video: "",
+    },
+    {
+      title: "Karteca",
+      href: "https://paykart-frontend.vercel.app",
+      dates: "",
+      active: true,
+      description:
+        "Karteca is a modern e-commerce app with user authentication, order management, and a multi-level referral system with wallet and activity tracking.",
+      technologies: [
+        "Next.js",
+        "Typescript",
+        "TailwindCSS",
+        "Node.js",
+        "MongoDB",
+        "Redis",
+        "PWA",
+      ],
+      links: [
+        {
+          type: "Website",
+          href: "https://paykart-frontend.vercel.app/",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "/karteca.png",
+      video: "",
+    },
+    {
+      title: "Creto",
+      href: "https://creto-frontend-black.vercel.app/",
+      dates: "",
+      active: true,
+      description:
+        "A modern e-commerce website focused on premium bicycles, offering a clean UI/UX, smooth shopping experience, and curated collections for cycling enthusiasts.",
+      technologies: [
+        "React.js",
+        "Typescript",
+        "TailwindCSS",
+        "Node.js",
+        "MongoDB",
+        "Firebase",
+        "Stripe",
+      ],
+      links: [
+        {
+          type: "Website",
+          href: "https://creto-frontend-black.vercel.app/",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "/creto.png",
+      video: "",
+    },
+    {
+      title: "Instagram Clone",
+      href: "https://instagram-fullstack-amir.vercel.app/",
+      dates: "",
+      active: true,
+      description:
+        "A full-featured Instagram clone with photo and video sharing, real-time chat, likes, comments, explore feed, reels, and user profiles — designed with a clean UI",
+      technologies: [
+        "React.js",
+        "TailwindCSS",
+        "Node.js",
+        "MongoDB",
+        "Socket IO",
+      ],
+      links: [
+        {
+          type: "Website",
+          href: "https://instagram-fullstack-amir.vercel.app/",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "/instagram.png",
+      video: "",
     },
   ],
   hackathons: [
