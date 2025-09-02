@@ -9,9 +9,10 @@ export const DATA = {
   locationLink:
     "https://www.google.com/maps/place/Greater+Noida,+Uttar+Pradesh",
   description:
-    "Builder mindset with a developer’s toolkit. Always shipping, always learning.",
+    // "Builder mindset with a developer’s toolkit. Always shipping, always learning.",
+    "Full stack web3 developer",
   summary:
-    "Started with curiosity, stayed for the bugs. I’ve worked on freelance and personal projects that taught me more than any course could. Right now, I’m deep into full-stack dev, writing clean logic, and slowly falling in love with the terminal.[](/#education)",
+    "Started with curiosity, stayed for the bugs. I’ve worked on freelance and personal projects that taught me more than any course could. Right now, I’m deep into blockchain dev, and have experience in full stack development.[](/#education)",
   avatarUrl: "/me.jpg",
   skills: [
     "React",
