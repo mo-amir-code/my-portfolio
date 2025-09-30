@@ -10,7 +10,7 @@ export const DATA = {
     "https://www.google.com/maps/place/Greater+Noida,+Uttar+Pradesh",
   description:
     // "Builder mindset with a developer’s toolkit. Always shipping, always learning.",
-    "Full stack web3 developer",
+    "Full stack developer",
   summary:
     "Started with curiosity, stayed for the bugs. I’ve worked on freelance and personal projects that taught me more than any course could. Right now, I’m deep into blockchain dev, and have experience in full stack development.[](/#education)",
   avatarUrl: "/me.jpg",
