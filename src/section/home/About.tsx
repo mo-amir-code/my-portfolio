@@ -1,6 +1,6 @@
-import { BLUR_FADE_DELAY } from "@/app/page";
 import BlurFade from "@/components/magicui/blur-fade";
 import { TypographyH2 } from "@/components/typography";
+import { BLUR_FADE_DELAY } from "@/data";
 import { DATA } from "@/data/resume";
 import React from "react";
 import Markdown from "react-markdown";

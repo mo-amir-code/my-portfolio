@@ -1,7 +1,7 @@
-import { BLUR_FADE_DELAY } from "@/app/page";
 import BlurFade from "@/components/magicui/blur-fade";
 import { TypographyH2 } from "@/components/typography";
 import { Badge } from "@/components/ui/badge";
+import { BLUR_FADE_DELAY } from "@/data";
 import { DATA } from "@/data/resume";
 
 const Skills = () => {

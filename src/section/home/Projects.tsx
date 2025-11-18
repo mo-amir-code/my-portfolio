@@ -1,6 +1,6 @@
-import { BLUR_FADE_DELAY } from "@/app/page";
 import BlurFade from "@/components/magicui/blur-fade";
 import { ProjectCard } from "@/components/project-card";
+import { BLUR_FADE_DELAY } from "@/data";
 import { DATA } from "@/data/resume";
 
 const Projects = () => {

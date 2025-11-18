@@ -9,7 +9,7 @@ import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import BlurFade from "./magicui/blur-fade";
-import { BLUR_FADE_DELAY } from "@/app/page";
+import { BLUR_FADE_DELAY } from "@/data";
 
 interface ResumeCardProps {
   logoUrl: string;

@@ -1,7 +1,7 @@
-import { BLUR_FADE_DELAY } from "@/app/page";
 import BlurFade from "@/components/magicui/blur-fade";
 import BlurFadeText from "@/components/magicui/blur-fade-text";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { BLUR_FADE_DELAY } from "@/data";
 import { DATA } from "@/data/resume";
 import React from "react";
 

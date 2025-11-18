@@ -1,5 +1,5 @@
-import { BLUR_FADE_DELAY } from "@/app/page";
 import BlurFade from "@/components/magicui/blur-fade";
+import { BLUR_FADE_DELAY } from "@/data";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
 

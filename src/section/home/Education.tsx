@@ -1,7 +1,7 @@
-import { BLUR_FADE_DELAY } from "@/app/page";
 import BlurFade from "@/components/magicui/blur-fade";
 import { ResumeCard } from "@/components/resume-card";
 import { TypographyH2 } from "@/components/typography";
+import { BLUR_FADE_DELAY } from "@/data";
 import { DATA } from "@/data/resume";
 
 const Education = () => {
@@ -21,6 +21,7 @@ const Education = () => {
               key={education.school}
               href={education.href}
               logoUrl={education.logoUrl}
+              technologies={[]}
               altText={education.school}
               title={education.school}
               subtitle={education.degree}
