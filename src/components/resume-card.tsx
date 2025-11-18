@@ -8,11 +8,14 @@ import { motion } from "framer-motion";
 import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import BlurFade from "./magicui/blur-fade";
+import { BLUR_FADE_DELAY } from "@/app/page";
 
 interface ResumeCardProps {
   logoUrl: string;
   altText: string;
   title: string;
+  technologies: string[];
   subtitle?: string;
   href?: string;
   badges?: readonly string[];
@@ -23,6 +26,7 @@ export const ResumeCard = ({
   logoUrl,
   altText,
   title,
+  technologies,
   subtitle,
   href,
   badges,
@@ -80,7 +84,7 @@ export const ResumeCard = ({
                   )}
                 />
               </h3>
-              <div className="text-xs sm:text-sm tabular-nums text-muted-foreground text-right">
+              <div className="text-xs absolute top-0 right-0 pl-2 pr-1 py-1 border-l border-b sm:text-sm tabular-nums text-muted-foreground text-right">
                 {period}
               </div>
             </div>
@@ -100,6 +104,16 @@ export const ResumeCard = ({
               }}
               className="mt-2 text-xs sm:text-sm"
             >
+              <div className="flex flex-wrap gap-1 pt-4">
+                {technologies?.map((skill, id) => (
+                  <BlurFade
+                    key={skill}
+                    delay={BLUR_FADE_DELAY * 10 + id * 0.05}
+                  >
+                    <Badge key={skill}>{skill}</Badge>
+                  </BlurFade>
+                ))}
+              </div>
               {description}
             </motion.div>
           )}

@@ -8,17 +8,16 @@ export const DATA = {
   location: "Greater Noida",
   locationLink:
     "https://www.google.com/maps/place/Greater+Noida,+Uttar+Pradesh",
-  description:
-    // "Builder mindset with a developer’s toolkit. Always shipping, always learning.",
-    "Full stack developer",
+  description: "A Full Stack web developer.",
   summary:
-    "Started with curiosity, stayed for the bugs. I’ve worked on freelance and personal projects that taught me more than any course could. Right now, I’m deep into blockchain dev, and have experience in full stack development.[](/#education)",
-  avatarUrl: "/me.jpg",
+    "I like building fast, intelligent web apps. My stack includes TypeScript, React, Next.js, and PostgreSQL, and lately I’ve been creating AI-powered experiences using RAG and modern LLM techniques.[](/#education)",
+  avatarUrl: "/me.png",
   skills: [
+    "JavsScript",
+    "TypeScript",
+    "Python",
     "React",
     "Next.js",
-    "Typescript",
-    "C++",
     "Node.js",
     "Postgres",
     "Docker",
@@ -32,9 +31,9 @@ export const DATA = {
     "PostgreSQL",
     "Redis",
     "Cloudinary",
-    "AWS(EC2, S3, Lambda)",
+    "AWS",
     "VPS",
-    "CI/CD(Github Actions)",
+    "CI/CD",
     "Nginx",
     "Git",
     "Github",
@@ -53,21 +52,18 @@ export const DATA = {
         name: "GitHub",
         url: "https://github.com/mo-amir-code",
         icon: Icons.github,
-
         navbar: true,
       },
       LinkedIn: {
         name: "LinkedIn",
         url: "https://www.linkedin.com/in/mo-amir",
         icon: Icons.linkedin,
-
         navbar: true,
       },
       X: {
         name: "X",
         url: "https://x.com/mo_amir_code",
         icon: Icons.x,
-
         navbar: true,
       },
       Youtube: {
@@ -80,12 +76,10 @@ export const DATA = {
         name: "Send Email",
         url: "#",
         icon: Icons.email,
-
         navbar: false,
       },
     },
   },
-
   work: [
     {
       company: "Freelancer",
@@ -95,7 +89,8 @@ export const DATA = {
       title: "Full Stack Developer",
       logoUrl: "",
       start: "July 2024",
-      end: "Jan 2025",
+      end: "Present",
+      technologies: ["MERN", "Next.js", "TypeScript", "NodeJs", "AWS", "VPS"],
       description:
         "Cloned three casino-style games—Dragon Tiger, Trenball, and Okwin—using React and JavaScript, replicating real gameplay mechanics with animations, betting timers, and round simulations. Included a control system to simulate outcomes and built dynamic game states that mirror real-world platforms.",
     },
@@ -103,6 +98,7 @@ export const DATA = {
       company: "HOC",
       href: "https://myhoc.in/",
       badges: [],
+      technologies: ["JavaScript", "Next.js", "Firebase"],
       location: "Remote",
       title: "Full Stack Developer Intern",
       logoUrl: "/hoc.jpeg",
@@ -115,6 +111,7 @@ export const DATA = {
       company: "Zummit Infolabs",
       href: "https://www.linkedin.com/company/zummit-infolabs-dna",
       badges: [],
+      technologies: ["Node.js", "JavaScript", "MongoDB"],
       location: "Remote",
       title: "Node.Js Developer Intern",
       logoUrl: "/zummit.jpeg",
@@ -144,6 +141,43 @@ export const DATA = {
   ],
   projects: [
     {
+      title: "AI Cloud Wallet",
+      href: "https://ai-cloud-wallet.onrender.com/client",
+      dates: "Oct 2025 - Nov 2025",
+      active: true,
+      description:
+        "A clean, fast Solana wallet with secure login, quick transactions, voice commands, contacts, and real-time portfolio tracking.",
+      technologies: [
+        "React.js",
+        "TypeScript",
+        "Tenserflow.js",
+        "Node.js",
+        "OAuth2.0",
+        "TailwindCSS",
+        "Vercel",
+        "Render",
+        "Postman",
+        "Solana",
+        "PostgreSQL",
+        "Hugginface",
+        "Tenstack",
+      ],
+      links: [
+        {
+          type: "Live",
+          href: "https://ai-cloud-wallet.onrender.com/client",
+          icon: <Icons.globe className="size-3" />,
+        },
+        {
+          type: "Github",
+          href: "https://github.com/mo-amir-code/AI-Cloud-Wallet",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/ai-cloud-wallet.png",
+      video: "",
+    },
+    {
       title: "ChatGPT Manager",
       href: "https://chromewebstore.google.com/detail/chatgpt-manager/ngdjiegldihfcmiccchkaockgjacbbjm",
       dates: "Feb 2025 - March 2025",
@@ -161,12 +195,17 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Website",
+          type: "Live",
           href: "https://chromewebstore.google.com/detail/chatgpt-manager/ngdjiegldihfcmiccchkaockgjacbbjm",
           icon: <Icons.globe className="size-3" />,
         },
+        {
+          type: "Github",
+          href: "https://github.com/mo-amir-code/botAddons",
+          icon: <Icons.github className="size-3" />,
+        },
       ],
-      image: "https://img.youtube.com/vi/xzAYtD5INAs/hqdefault.jpg",
+      image: "/chatgpt-manager.jpg",
       video: "",
     },
     {
@@ -187,9 +226,19 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Website",
+          type: "Live",
           href: "https://paykart-frontend.vercel.app/",
           icon: <Icons.globe className="size-3" />,
+        },
+        {
+          type: "FE",
+          href: "https://github.com/mo-amir-code/karteca-frontend",
+          icon: <Icons.github className="size-3" />,
+        },
+        {
+          type: "BE",
+          href: "https://github.com/mo-amir-code/karteca-backend",
+          icon: <Icons.github className="size-3" />,
         },
       ],
       image: "/karteca.png",
@@ -213,9 +262,19 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Website",
+          type: "Live",
           href: "https://creto-frontend-black.vercel.app/",
           icon: <Icons.globe className="size-3" />,
+        },
+        {
+          type: "FE",
+          href: "https://github.com/mo-amir-code/Creto-Frontend",
+          icon: <Icons.github className="size-3" />,
+        },
+        {
+          type: "BE",
+          href: "https://github.com/mo-amir-code/Creto-Backend",
+          icon: <Icons.github className="size-3" />,
         },
       ],
       image: "/creto.png",
@@ -237,9 +296,19 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Website",
+          type: "Live",
           href: "https://instagram-fullstack-amir.vercel.app/",
           icon: <Icons.globe className="size-3" />,
+        },
+        {
+          type: "FE",
+          href: "https://github.com/mo-amir-code/Instagram-Frontend",
+          icon: <Icons.github className="size-3" />,
+        },
+        {
+          type: "BE",
+          href: "https://github.com/mo-amir-code/Instagram-Backend",
+          icon: <Icons.github className="size-3" />,
         },
       ],
       image: "/instagram.png",

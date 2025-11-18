@@ -1,0 +1,7 @@
+export { default as HomeHero } from "./Hero"
+export { default as HomeAbout } from "./About"
+export { default as HomeWork } from "./Work"
+export { default as HomeEducation } from "./Education"
+export { default as HomeSkills } from "./Skills"
+export { default as HomeProjects } from "./Projects"
+export { default as HomeContacts } from "./Contacts"

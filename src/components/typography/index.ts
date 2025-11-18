@@ -1,0 +1,1 @@
+export {default as TypographyH2} from "./TypographyH2"
