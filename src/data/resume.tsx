@@ -4,7 +4,7 @@ import { HomeIcon } from "lucide-react";
 export const DATA = {
   name: "Mo Amir",
   initials: "MA",
-  url: "https://mekyu.dev",
+  url: "https://mekyu.in",
   location: "Greater Noida",
   locationLink:
     "https://www.google.com/maps/place/Greater+Noida,+Uttar+Pradesh",
