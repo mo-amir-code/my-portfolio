@@ -2,8 +2,8 @@ import { Icons } from "@/components/icons";
 import { HomeIcon } from "lucide-react";
 
 export const DATA = {
-  name: "Mo Amir",
-  initials: "MA",
+  name: "Mek Yu",
+  initials: "MY",
   url: "https://mekyu.in",
   location: "Greater Noida",
   locationLink:

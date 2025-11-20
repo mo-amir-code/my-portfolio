@@ -16,7 +16,7 @@ const Hero = () => {
                 delay={BLUR_FADE_DELAY}
                 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none"
                 yOffset={8}
-                text={`hi, i'm ${DATA.name.split(" ")[1]} 👋`}
+                text={`hi, i'm ${DATA.name.split(" ")[0]}`}
               />
             </div>
             <div className="flex items-center flex-1 pl-2">
