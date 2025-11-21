@@ -13,7 +13,7 @@ export default async function BlogPage() {
   const posts = await getBlogPosts();
 
   return (
-    <section>
+    <section className="py-12">
       <BlurFade delay={BLUR_FADE_DELAY}>
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">blog</h1>
       </BlurFade>
@@ -21,7 +21,7 @@ export default async function BlogPage() {
         <BlurFade delay={BLUR_FADE_DELAY * 2 + id * 0.05} key={post.slug}>
           <Link
             className="flex flex-col space-y-1 mb-4"
-            href={`/blog/${post.slug}`}
+            href={`/admin/blog/write?blogId=${post.slug}`}
           >
             <BlogCard {...post} />
           </Link>

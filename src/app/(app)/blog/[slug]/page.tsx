@@ -1,7 +1,7 @@
+import { BlogContent } from "@/components/blog";
 import { getBlogPosts, getPost } from "@/data/blog";
 import { DATA } from "@/data/resume";
 import type { Metadata } from "next";
-import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
@@ -66,9 +66,7 @@ export default async function Blog({
 
   return (
     <section id="blog">
-      <article>
-        <MDXRemote source={post.content} />
-      </article>
+      <BlogContent content={post.content} />
     </section>
   );
 }

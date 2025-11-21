@@ -5,6 +5,7 @@ import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { connectToDB } from "@/lib/db";
 import { Toaster } from "@/components/ui/sonner";
+import { configureCloudinary } from "@/config/cloudinary";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -17,6 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   connectToDB();
+  configureCloudinary();
   return (
     <html lang="en" suppressHydrationWarning>
       <body

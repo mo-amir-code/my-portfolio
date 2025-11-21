@@ -91,6 +91,7 @@ export async function getBlogPosts(): Promise<IBlogDocument[]> {
   // return getAllPosts(path.join(process.cwd(), "content"));
   await connectToDB()
   // console.log("[DEBUG] Cached connection: ", cachedConnection);
-  const posts = await Blog.find().sort({ publishedAt: -1 });
+  let posts = await Blog.find().sort({ publishedAt: -1 });
+  posts = JSON.parse(JSON.stringify(posts));
   return posts;
 }
