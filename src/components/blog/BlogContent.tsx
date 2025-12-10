@@ -1,6 +1,7 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import "./index.css";
 import { CodeBlock } from "../ui/code-block";
+import Image from "next/image";
 
 const components = {
   code: (props: any) => {
@@ -33,6 +34,25 @@ const components = {
         language={language}
         highlightLines={highlightLines}
         code={code}
+      />
+    );
+  },
+  img: (props: any) => {
+    const alt = props.alt;
+    const src = props.src;
+    // console.log("ALT: ", alt);
+    // console.log("SRC: ", src);
+
+    return (
+      <Image
+        alt={alt}
+        src={src}
+        loading="lazy"
+        placeholder="blur"
+        blurDataURL={src}
+        className="w-full"
+        width={1000}
+        height={1000}
       />
     );
   },

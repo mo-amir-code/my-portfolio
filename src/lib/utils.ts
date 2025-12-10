@@ -35,3 +35,37 @@ export function formatDate(date: string) {
     return `${fullDate} (${yearsAgo}y ago)`;
   }
 }
+
+// ttl = ms
+export function setWithExpiry(key: string, value: string, ttl: number) {
+  const now = Date.now();
+
+  const item = {
+    value: value,
+    expiry: now + ttl, // ttl = time to live (in ms)
+  };
+
+  localStorage.setItem(key, JSON.stringify(item));
+}
+
+export function getWithExpiry(key: string) {
+  const itemStr = localStorage.getItem(key);
+  if (!itemStr) return null;
+
+  const item = JSON.parse(itemStr);
+  const now = Date.now();
+
+  if (now > item.expiry) {
+    localStorage.removeItem(key);
+    return null;
+  }
+
+  if (item.value.length === 0) return null;
+
+  return item.value;
+}
+
+export function removeWithKey(key: string) {
+  localStorage.removeItem(key)
+}
+

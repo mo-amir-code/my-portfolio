@@ -13,7 +13,7 @@ export default async function BlogPage() {
   const posts = await getBlogPosts();
 
   return (
-    <section className="py-12">
+    <div className="py-12 max-w-2xl mx-auto w-full">
       <BlurFade delay={BLUR_FADE_DELAY}>
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">blog</h1>
       </BlurFade>
@@ -27,6 +27,6 @@ export default async function BlogPage() {
           </Link>
         </BlurFade>
       ))}
-    </section>
+    </div>
   );
 }
