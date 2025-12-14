@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
 export async function GET(_request: Request) {
     try {
-        const blogs = await Blog.find().sort({ publishedAt: -1 });
+        const blogs = await Blog.find({ status: "publish" }).sort({ publishedAt: -1 });
         return NextResponse.json({ status: 200, blogs })
     } catch (error) {
         return NextResponse.json({ status: 500, message: "Server error" })

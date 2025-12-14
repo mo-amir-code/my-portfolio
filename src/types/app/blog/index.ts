@@ -1,3 +1,4 @@
+import { BlogStatusType } from "@/app/admin/blog/write/types"
 
 
 type BlogMetadataType = {
@@ -10,6 +11,7 @@ type BlogMetadataType = {
 
 type BlogType = BlogMetadataType & {
     content: string
+    status: BlogStatusType
 }
 
 

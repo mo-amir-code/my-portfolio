@@ -2,6 +2,8 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import "./index.css";
 import { CodeBlock } from "../ui/code-block";
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
 const components = {
   code: (props: any) => {
@@ -54,6 +56,21 @@ const components = {
         width={1000}
         height={1000}
       />
+    );
+  },
+  a: (props: any) => {
+    const content = props.children;
+    const href = props.href;
+
+    return (
+      <Link href={href} target="_blank">
+        <span className="w-fit inline-flex hover:underline items-center gap-1 font-medium text-link">
+          <span>{content}</span>
+          <span className="inline-block">
+            <ArrowUpRight size={18} />
+          </span>
+        </span>
+      </Link>
     );
   },
 };

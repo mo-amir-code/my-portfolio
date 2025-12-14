@@ -16,6 +16,7 @@ const blogSchema = new mongoose.Schema<IBlogDocument>(
         publishedAt: { type: Date, required: [true, "Published date is required"] },
         summary: { type: String, required: [true, "Summary is required"] },
         content: { type: String, required: [true, "Content is required"] },
+        status: { type: String, enum: ["draft", "publish", "deleted"] },
     },
     {
         timestamps: true,

@@ -19,16 +19,15 @@ import { useSearchParams } from "next/navigation";
 import { BlogContent } from "@/components/blog";
 import { Button } from "@/components/ui/button";
 import { getWithExpiry, removeWithKey, setWithExpiry } from "@/lib/utils";
-
-// import { HomeHero } from "@/section/home";
-
-// const components = {
-//   HomeHero: (props:any) => (
-//     <HomeHero {...props} className="large-text">
-//       {props.children}
-//     </HomeHero>
-//   ),
-// };
+import { BlogStatusType } from "./types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { BLOG_STATUS } from "@/data/data";
 
 const BlogWriter = () => {
   const [code, setCode] = useState<string>("");
@@ -52,6 +51,7 @@ const BlogWriter = () => {
     new Date().toISOString().split("T")[0]
   );
   const [summary, setSummary] = useState<string>("");
+  const [status, setStatus] = useState<BlogStatusType>("draft");
 
   const contentRef = useRef<HTMLTextAreaElement>(null);
 
@@ -100,24 +100,40 @@ const BlogWriter = () => {
   }, [code]);
 
   const handleOnLink = useCallback(() => {
-    let link = "";
+    if (!contentRef.current) return;
 
-    let lastWord = getLastWord();
+    const el = contentRef.current;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
 
-    if (lastWord.length === 0) {
-      link = `[](Link here...)`;
+    // Selected text
+    const selectedText = code.slice(start, end);
+
+    let newCode = code;
+
+    if (selectedText.length > 0) {
+      // Wrap selected text
+      const link = `[${selectedText}](Link)`;
+      newCode = code.slice(0, start) + link + code.slice(end);
     } else {
-      link = `[${lastWord}](Link)`.trim();
-      let newCode = code.replace(lastWord, link);
-      setCode(newCode);
-      return;
+      // Fallback → last word or empty
+      const lastWord = getLastWord();
+
+      if (lastWord.length > 0) {
+        const link = `[${lastWord}](Link)`;
+        newCode = code.replace(new RegExp(`${lastWord}$`), link);
+      } else {
+        newCode = code + `[](Link here...)`;
+      }
     }
 
-    setCode((prev) => prev + link);
-    if (contentRef.current) {
-      contentRef.current.focus();
-    }
-  }, [code, setCode, contentRef]);
+    setCode(newCode);
+
+    // Restore focus
+    requestAnimationFrame(() => {
+      el.focus();
+    });
+  }, [code, getLastWord]);
 
   const handleToPersistContent = useCallback(
     (code: string) => {
@@ -143,7 +159,7 @@ const BlogWriter = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [title, slug, publishedAt, summary, code]);
+  }, [title, slug, publishedAt, summary, code, status]);
 
   const handlePublish = useCallback(
     async (e: React.FormEvent) => {
@@ -159,6 +175,7 @@ const BlogWriter = () => {
         publishedAt: new Date(publishedAt),
         summary,
         content: code,
+        status,
       };
 
       if (blog) {
@@ -171,21 +188,21 @@ const BlogWriter = () => {
       }
 
       // console.log("[DEBUG] Blog data to publish: ", blogData);
-      const status = blog ? "update" : "create";
+      const responseStatus = blog ? "update" : "create";
 
       try {
         const res = await axios.post("/api/blog", blogData);
         setBlog(res.data.data.blog);
         console.log("[DEBUG] Resposne is here: ", res);
-        toast.success(`Blog ${status} successfully!`);
+        toast.success(`Blog ${responseStatus} successfully!`);
       } catch (error) {
         console.error(`[ERROR] Occurred while publishing blog: ${error}`);
-        toast.error(`Failed to ${status} blog`);
+        toast.error(`Failed to ${responseStatus} blog`);
       } finally {
         setIsLoading(false);
       }
     },
-    [title, slug, publishedAt, summary, code, blog, validateForm]
+    [title, slug, publishedAt, summary, code, blog, status, validateForm]
   );
 
   const handleSlugCheck = useCallback(
@@ -254,9 +271,10 @@ const BlogWriter = () => {
         new Date(fetchedBlog.publishedAt).toISOString().split("T")[0]
       );
       setSummary(fetchedBlog.summary);
+      setStatus(fetchedBlog.status);
 
       const content = getWithExpiry(localBlogId);
-      console.log("CONTENT: ", content);
+      // console.log("CONTENT: ", content);
       setCode(content ?? fetchedBlog.content);
     } catch (error) {
       console.error("[ERROR] Occurred while fetching blog: ", error);
@@ -357,6 +375,29 @@ const BlogWriter = () => {
                     className={`${errors.summary ? "border-red-600" : ""}`}
                     disabled={isLoading}
                   />
+                  {errors.summary && (
+                    <span className="text-red-600 text-xs pl-1">
+                      {errors.summary}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="grid w-full items-center gap-3">
+                <Label htmlFor="summary">Status</Label>
+                <div>
+                  <Select
+                    onValueChange={(val: BlogStatusType) => setStatus(val)}
+                    value={status}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="draft" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BLOG_STATUS.map((st) => (
+                        <SelectItem value={st}>{st}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {errors.summary && (
                     <span className="text-red-600 text-xs pl-1">
                       {errors.summary}
