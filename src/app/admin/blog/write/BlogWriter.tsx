@@ -13,7 +13,6 @@ import {
   useRef,
   useState,
 } from "react";
-import axios from "axios";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import { BlogContent } from "@/components/blog";
@@ -28,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BLOG_STATUS } from "@/data/data";
+import { httpAxios } from "@/config/axios";
 
 const BlogWriter = () => {
   const [code, setCode] = useState<string>("");
@@ -72,7 +72,7 @@ const BlogWriter = () => {
       newForm.append("image", file!);
 
       try {
-        const res = await axios.post("/api/blog/image/upload", newForm);
+        const res = await httpAxios.post("/blog/image/upload", newForm);
         // console.log("[DEBUG] Image upload response: ", res);
         const imagePart = `![${file?.name.replace(/\.[^/.]+$/, "")}](${
           res.data.data.url
@@ -191,7 +191,7 @@ const BlogWriter = () => {
       const responseStatus = blog ? "update" : "create";
 
       try {
-        const res = await axios.post("/api/blog", blogData);
+        const res = await httpAxios.post("/blog", blogData);
         setBlog(res.data.data.blog);
         console.log("[DEBUG] Resposne is here: ", res);
         toast.success(`Blog ${responseStatus} successfully!`);
@@ -228,7 +228,7 @@ const BlogWriter = () => {
         setSlug(finalSlug);
 
         try {
-          const res = await axios.get(`/api/blog/${finalSlug}/check`);
+          const res = await httpAxios.get(`/blog/${finalSlug}/check`);
           if (res.data.exist) {
             setIsSlugExist(true);
             setErrors((prev) => ({ ...prev, slug: undefined }));
@@ -261,7 +261,7 @@ const BlogWriter = () => {
 
   const fetchBlog = useCallback(async () => {
     try {
-      const res = await axios.get(`/api/blog/${blogId}`);
+      const res = await httpAxios.get(`/blog/${blogId}`);
       // console.log("[DEBUG] Fetched blog: ", res.data.data.blog);
       const fetchedBlog: BlogType = res.data.data.blog;
       setBlog(fetchedBlog);
@@ -394,7 +394,9 @@ const BlogWriter = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {BLOG_STATUS.map((st) => (
-                        <SelectItem value={st}>{st}</SelectItem>
+                        <SelectItem key={st} value={st}>
+                          {st}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

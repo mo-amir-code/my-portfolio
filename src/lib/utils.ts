@@ -1,5 +1,9 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import jwt from "jsonwebtoken"
+import { JWT_SIGN } from "@/config/secrets";
+import { JWTTokenVerifierType } from "./types";
+import { jwtVerify, errors } from "jose"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -69,3 +73,30 @@ export function removeWithKey(key: string) {
   localStorage.removeItem(key)
 }
 
+export function generateJWTToken(data: { email: string }) {
+  const token = jwt.sign(data, JWT_SIGN, { expiresIn: "7d" })
+  return token
+}
+
+export async function verifyJWTToken(
+  token: string
+): Promise<JWTTokenVerifierType> {
+  try {
+    const secret = new TextEncoder().encode(JWT_SIGN);
+
+    const { payload } = (await jwtVerify(token, secret)) as { payload: { email: string } };
+
+    return {
+      valid: true,
+      payload,
+    };
+  } catch (error) {
+    console.log("[ERROR] JWT Verifying Error:", error);
+
+    if (error instanceof errors.JWTExpired) {
+      return { valid: false, expired: true };
+    }
+
+    return { valid: false };
+  }
+}

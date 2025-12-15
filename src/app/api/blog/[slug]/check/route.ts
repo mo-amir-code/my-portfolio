@@ -1,3 +1,4 @@
+import { connectToDB } from "@/lib/db"
 import Blog from "@/models/Blog"
 import { NextResponse } from "next/server"
 
@@ -9,6 +10,8 @@ export async function GET(_request: Request, context: { params: Params }) {
     const slug = context.params.slug // '1'
 
     let res = { exist: false }
+
+    await connectToDB()
 
     try {
         const blog = await Blog.findOne({ slug })

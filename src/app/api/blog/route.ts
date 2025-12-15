@@ -1,9 +1,11 @@
+import { connectToDB } from "@/lib/db";
 import Blog from "@/models/Blog";
 import { NextResponse } from "next/server"
 
 
 export async function POST(request: Request) {
     const data = await request.json();
+    await connectToDB()
 
     try {
         // console.log("[DEBUG] Blog Data:", data);
