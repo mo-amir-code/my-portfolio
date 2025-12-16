@@ -1,3 +1,4 @@
+import { connectToDB } from "@/lib/db";
 import { generateJWTToken } from "@/lib/utils";
 import { adminMiddleware } from "@/middlewares";
 import User from "@/models/User";
@@ -16,6 +17,8 @@ export async function POST(request: NextRequest) {
         }
 
         // console.log("DATA: ", data)
+        
+        await connectToDB()
 
         const user = await User.findOne({ email: data.email })
 
