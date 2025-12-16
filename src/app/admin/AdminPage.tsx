@@ -1,8 +1,7 @@
 "use client";
 import { httpAxios } from "@/config/axios";
 import { useAuthStore } from "@/stores/authStore";
-import axios from "axios";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function AdminPage({
@@ -13,6 +12,7 @@ export default function AdminPage({
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const { isUserLoggedIn, setLoggedInStatus } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -34,12 +34,14 @@ export default function AdminPage({
   useEffect(() => {
     if (!isChecked) return;
 
-    if (isUserLoggedIn) {
-      router.push("/admin/blog");
-    } else {
+    if (!isUserLoggedIn) {
       router.replace("/admin/auth");
     }
-  }, [isUserLoggedIn, isChecked, router]);
+
+    if (isUserLoggedIn && pathname.startsWith("/admin/auth")) {
+      router.replace("/admin/blog");
+    }
+  }, [isUserLoggedIn, isChecked, pathname, router]);
 
   return <div>{children}</div>;
 }
