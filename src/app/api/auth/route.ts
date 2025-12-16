@@ -1,7 +1,7 @@
 import { generateJWTToken } from "@/lib/utils";
 import { adminMiddleware } from "@/middlewares";
 import User from "@/models/User";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 import { NextRequest, NextResponse } from "next/server";
 
 
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ message: "Unauthorized request" }, { status: 401 })
         }
 
-        const isCorrect = bcrypt.compareSync(data.password, user.password)
+        const isCorrect = await bcrypt.compare(data.password, user.password)
 
         if (!isCorrect) {
             return NextResponse.json({ message: "Password is incorrect" }, { status: 400 })
