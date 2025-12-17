@@ -42,8 +42,17 @@ const components = {
   img: (props: any) => {
     const alt = props.alt;
     const src = props.src;
+    const title = props.title;
     // console.log("ALT: ", alt);
     // console.log("SRC: ", src);
+    let styles = null;
+    try {
+      // console.log("Before STYLES: ", title);
+      styles = JSON.parse(title);
+      // console.log("STYLES: ", styles);
+    } catch (error) {
+      console.log("[ERROR] ", error);
+    }
 
     return (
       <Image
@@ -51,10 +60,11 @@ const components = {
         src={src}
         loading="lazy"
         placeholder="blur"
+        style={styles ?? {}}
         blurDataURL={src}
-        className="w-full"
-        width={1000}
-        height={1000}
+        className={"w-full h-auto"}
+        height={1080}
+        width={1920}
       />
     );
   },

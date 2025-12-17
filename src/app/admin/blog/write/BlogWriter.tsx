@@ -76,7 +76,7 @@ const BlogWriter = () => {
         // console.log("[DEBUG] Image upload response: ", res);
         const imagePart = `![${file?.name.replace(/\.[^/.]+$/, "")}](${
           res.data.data.url
-        })`;
+        } "{}")`;
         setCode((prev) => prev + imagePart);
         toast.success("Image uploaded successfully");
       } catch (error) {
