@@ -2,6 +2,7 @@ import { connectToDB } from "@/lib/db";
 import Blog, { IBlogDocument } from "@/models/Blog";
 // import { BlogType } from "@/types/app/blog";
 import fs from "fs";
+import { unstable_cache } from "next/cache";
 // import matter from "gray-matter";
 import path from "path";
 import rehypePrettyCode from "rehype-pretty-code";
@@ -56,14 +57,19 @@ export async function markdownToHTML(markdown: string) {
 //   };
 // }
 
-export async function getPost(slug: string): Promise<IBlogDocument | null> {
-  await connectToDB()
-  // console.log("[DEBUG] Cached connection: ", cachedConnection);
-  const blog = await Blog.findOne({ slug });
-  if (!blog) {
-    return null;
-  }
-  return blog;
+export function getPost(slug: string): Promise<IBlogDocument | null> {
+  const cachedFn = unstable_cache(
+    async (): Promise<IBlogDocument | null> => {
+      await connectToDB();
+      return Blog.findOne({ slug }).lean<IBlogDocument | null>();
+    },
+    ["blog-post", slug],
+    {
+      revalidate: 60 * 60 * 24 * 24, // 24 hours
+    }
+  );
+
+  return cachedFn();
 }
 
 // async function getAllPosts(dir: string) {
@@ -86,12 +92,19 @@ export async function getPost(slug: string): Promise<IBlogDocument | null> {
 //   return getAllPosts(path.join(process.cwd(), "content"));
 // }
 
+export const getBlogPosts = unstable_cache(
+  async (filter?: object): Promise<IBlogDocument[]> => {
+    await connectToDB();
 
-export async function getBlogPosts(filter?: object): Promise<IBlogDocument[]> {
-  // return getAllPosts(path.join(process.cwd(), "content"));
-  await connectToDB()
-  // console.log("[DEBUG] Cached connection: ", cachedConnection);
-  let posts = await Blog.find(filter ?? { status: "publish" }).sort({ publishedAt: -1 });
-  posts = JSON.parse(JSON.stringify(posts));
-  return posts;
-}
+    const posts = await Blog.find(filter ?? { status: "publish" })
+      .sort({ publishedAt: -1 })
+      .lean<IBlogDocument[]>();
+
+    return posts;
+  },
+  ["blog-posts"],
+  {
+    revalidate: 60 * 60 * 24 * 24, // 24 hours
+    tags: ["blog-posts"],
+  }
+);

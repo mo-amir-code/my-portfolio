@@ -1,5 +1,6 @@
 import { connectToDB } from "@/lib/db";
 import Blog from "@/models/Blog";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server"
 
 
@@ -14,6 +15,10 @@ export async function POST(request: Request) {
             delete data._id;
 
             const blog = await Blog.findByIdAndUpdate(blogId, data, { new: true });
+
+            // revalidating
+            revalidatePath(`/blog/${blog?.slug}`)
+
             return NextResponse.json({ status: 200, message: "Blog updated successfully", data: { blog } })
         }
         const blog = await Blog.create(data);
