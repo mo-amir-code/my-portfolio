@@ -10,7 +10,7 @@ export const DATA = {
     "https://www.google.com/maps/place/Greater+Noida,+Uttar+Pradesh",
   description: "A Full Stack web developer.",
   summary:
-    "I like building fast, intelligent web apps. My stack includes TypeScript, React, Next.js, and PostgreSQL, and lately I’ve been creating AI-powered experiences using RAG and modern LLM techniques.[](/#education)",
+    "I build fast web apps with TypeScript, React, Next.js, and PostgreSQL, include AI features, and I’m diving deeper into DevOps.[](/#education)",
   avatarUrl: "/me.png",
   skills: [
     "JavsScript",

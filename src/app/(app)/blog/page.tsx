@@ -1,8 +1,6 @@
-import { BlogCard } from "@/components/blog";
 import BlurFade from "@/components/magicui/blur-fade";
 import { BLUR_FADE_DELAY } from "@/data";
-import { getBlogPosts } from "@/data/blog";
-import Link from "next/link";
+import { Blogs } from "@/section/blog";
 
 export const metadata = {
   title: "Blog",
@@ -10,23 +8,14 @@ export const metadata = {
 };
 
 export default async function BlogPage() {
-  const posts = await getBlogPosts();
-
   return (
-    <section>
-      <BlurFade delay={BLUR_FADE_DELAY}>
-        <h1 className="font-medium text-2xl mb-8 tracking-tighter">Blogs</h1>
-      </BlurFade>
-      {posts.map((post, id) => (
-        <BlurFade delay={BLUR_FADE_DELAY * 2 + id * 0.05} key={post.slug}>
-          <Link
-            className="flex flex-col space-y-1 mb-4"
-            href={`/blog/${post.slug}`}
-          >
-            <BlogCard {...post} />
-          </Link>
+    <div className="py-6 md:py-12">
+      <div>
+        <BlurFade delay={BLUR_FADE_DELAY}>
+          <h1 className="font-medium text-2xl mb-8 tracking-tighter">Blogs</h1>
         </BlurFade>
-      ))}
-    </section>
+        <Blogs />
+      </div>
+    </div>
   );
 }

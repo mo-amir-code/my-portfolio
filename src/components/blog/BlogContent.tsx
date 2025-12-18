@@ -1,5 +1,5 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
-import "./index.css";
+import "./blogContent.css";
 import { CodeBlock } from "../ui/code-block";
 import Image from "next/image";
 import Link from "next/link";
@@ -104,7 +104,7 @@ const components = {
 
 const BlogContent = ({ content }: { content: string }) => {
   return (
-    <article>
+    <article className="blog-content">
       <MDXRemote source={content} components={{ ...components }} />
     </article>
   );

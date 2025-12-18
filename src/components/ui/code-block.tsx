@@ -3,6 +3,7 @@ import React from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { IconCheck, IconCopy } from "@tabler/icons-react";
+import { toast } from "sonner";
 
 type CodeBlockProps = {
   language: string;
@@ -39,9 +40,14 @@ export const CodeBlock = ({
   const copyToClipboard = async () => {
     const textToCopy = tabsExist ? tabs[activeTab].code : code;
     if (textToCopy) {
-      await navigator.clipboard.writeText(textToCopy);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(textToCopy);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (error) {
+        toast.error("unexpected error occurred!");
+        console.log(`[DEBUG] occurred while copying code: ${error}`);
+      }
     }
   };
 
