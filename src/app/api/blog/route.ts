@@ -1,6 +1,6 @@
 import { connectToDB } from "@/lib/db";
 import Blog from "@/models/Blog";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server"
 
 
@@ -18,6 +18,7 @@ export async function POST(request: Request) {
 
             // revalidating
             revalidatePath(`/blog/${blog?.slug}`)
+            revalidateTag("blog-posts")
 
             return NextResponse.json({ status: 200, message: "Blog updated successfully", data: { blog } })
         }
