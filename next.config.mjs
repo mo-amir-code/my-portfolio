@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["img.youtube.com", "res.cloudinary.com", "media.mekyu.cloud"],
+    domains: ["img.youtube.com", "res.cloudinary.com", "media.moamir.cloud"],
   },
   // transpilePackages: ["next-mdx-remote"],
 };

@@ -1,6 +1,9 @@
 import { uploadOnR2 } from "@/lib/r2";
 import { NextRequest, NextResponse } from "next/server";
 
+function uniqueDate() {
+    return new Date().toISOString().replace(/[:.]/g, "-");
+}
 
 export const POST = async (req: NextRequest) => {
     const formData = await req.formData();
@@ -15,7 +18,7 @@ export const POST = async (req: NextRequest) => {
             const buffer = Buffer.from(await file.arrayBuffer());
             // console.log(`[DEBUG] Buffer: ${buffer}`)
 
-            const filename = `uploads/${file.name}`
+            const filename = `uploads/${uniqueDate()}-${file.name}`
             const url = await uploadOnR2(buffer, filename, file.type)
             // console.log("Image uploaded to R2 with URL: ", url);
 
