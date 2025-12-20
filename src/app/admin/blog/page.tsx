@@ -5,7 +5,7 @@ import { getBlogPosts } from "@/data/blog";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Blog",
+  title: "Blogs",
   description: "My thoughts on software development, life, and more.",
 };
 

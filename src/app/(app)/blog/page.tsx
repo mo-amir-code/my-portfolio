@@ -1,9 +1,14 @@
 import BlurFade from "@/components/magicui/blur-fade";
 import { BLUR_FADE_DELAY } from "@/data";
+import { DATA } from "@/data/resume";
 import { Blogs } from "@/section/blog";
+import { Metadata } from "next";
 
-export const metadata = {
-  title: "Blog",
+export const metadata: Metadata = {
+  title: {
+    default: "Blogs",
+    template: `%s | ${DATA.name}`,
+  },
   description: "My thoughts on software development, life, and more.",
 };
 

@@ -2,9 +2,9 @@ import { Icons } from "@/components/icons";
 import { HomeIcon } from "lucide-react";
 
 export const DATA = {
-  name: "Mek Yu",
-  initials: "MY",
-  url: "https://mekyu.in",
+  name: "Mo Amir",
+  initials: "MA",
+  url: "https://moamir.cloud",
   location: "Greater Noida",
   locationLink:
     "https://www.google.com/maps/place/Greater+Noida,+Uttar+Pradesh",
