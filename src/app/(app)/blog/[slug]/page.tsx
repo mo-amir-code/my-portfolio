@@ -22,10 +22,10 @@ export async function generateMetadata({
     return;
   }
 
-  let { title, publishedAt, summary: description } = post;
+  let { title, publishedAt, summary: description, coverImage } = post;
 
   // let ogImage = image ? `${DATA.url}${image}` : `${DATA.url}/og?title=${title}`;
-  let ogImage = `${DATA.url}/og?title=${title}`;
+  let ogImage = `${coverImage}/og?title=${title}`;
 
   return {
     title,
@@ -65,7 +65,7 @@ export default async function Blog({
   }
 
   return (
-    <section id="blog" className="pb-12" >
+    <section id="blog" className="pb-12">
       <BlogContent content={post.content} />
     </section>
   );
