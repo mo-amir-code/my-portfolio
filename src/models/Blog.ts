@@ -12,6 +12,7 @@ export interface IBlogDocument extends IBlog, Document {
 const blogSchema = new mongoose.Schema<IBlogDocument>(
     {
         title: { type: String, required: [true, "Title is required"] },
+        coverImage: { type: String, required: [true, "Cover image is required"] },
         slug: { type: String, unique: true, required: [true, "Slug is required"] },
         publishedAt: { type: Date, required: [true, "Published date is required"] },
         summary: { type: String, required: [true, "Summary is required"] },

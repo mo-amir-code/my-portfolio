@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BlogType } from "@/types/app/blog";
-import { ArrowUp, Image, Link, Loader2, TimerReset } from "lucide-react";
+import { ArrowUp, ImageIcon, Link, Loader2, TimerReset, X } from "lucide-react";
 import {
   ChangeEvent,
   Suspense,
@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { BLOG_STATUS } from "@/data/data";
 import { httpAxios } from "@/config/axios";
+import Image from "next/image";
 
 const BlogWriter = () => {
   const [code, setCode] = useState<string>("");
@@ -35,11 +36,13 @@ const BlogWriter = () => {
   const [contentTO, setContentTO] = useState<ReturnType<
     typeof setTimeout
   > | null>(null);
+  const [coverImage, setCoverImage] = useState<string | null>(null);
   const [isSlugExist, setIsSlugExist] = useState<boolean | null>(null);
   const imgRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [blog, setBlog] = useState<(BlogType & { _id?: string }) | null>(null);
-  const [isPreviewHide, setIsPreviewHide] = useState<boolean>(false);
+  const [isPreviewHide, setIsPreviewHide] = useState<boolean>(true);
+  const [isCustomSlug, setIsCustomSlug] = useState<boolean>(false);
   const searchParams = useSearchParams();
   const blogId = searchParams.get("blogId");
   const localBlogId = `content-${blogId}`;
@@ -58,25 +61,34 @@ const BlogWriter = () => {
   // Error states
   const [errors, setErrors] = useState<{
     title?: string;
+    coverImage?: string;
     slug?: string;
     publishedAt?: string;
     summary?: string;
     content?: string;
   }>({});
 
-  const handleOnImageSelect = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-
+  const handleToUploadImageAndGetURL = useCallback(
+    async (file: File | undefined) => {
       const newForm = new FormData();
       newForm.append("image", file!);
 
+      const res = await httpAxios.post("/blog/image/upload", newForm);
+      return res.data.data.url;
+    },
+    []
+  );
+
+  const handleOnImageSelect = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
       try {
-        const res = await httpAxios.post("/blog/image/upload", newForm);
         // console.log("[DEBUG] Image upload response: ", res);
-        const imagePart = `![${file?.name.replace(/\.[^/.]+$/, "")}](${
-          res.data.data.url
-        } "{}")`;
+        const imgUrl = await handleToUploadImageAndGetURL(file);
+        const imagePart = `![${file?.name.replace(
+          /\.[^/.]+$/,
+          ""
+        )}](${imgUrl} "{}")`;
         setCode((prev) => prev + imagePart);
         toast.success("Image uploaded successfully");
       } catch (error) {
@@ -84,8 +96,27 @@ const BlogWriter = () => {
         toast.error("Failed to upload image");
       }
     },
-    []
+    [toast, setCode, handleToUploadImageAndGetURL]
   );
+
+  const handleToSetCoverImage = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+
+      try {
+        const imageUrl = await handleToUploadImageAndGetURL(file);
+        setCoverImage(imageUrl);
+      } catch (error) {
+        console.error(`[ERROR] Occurred while setting cover image: ${error}`);
+        toast.error("error occurred while setting cover image");
+      }
+    },
+    [toast, coverImage, setCoverImage, handleToUploadImageAndGetURL]
+  );
+
+  const handleToDeleteImage = useCallback(async (imageUrl: string) => {
+    // TODO: Delete image uring url
+  }, []);
 
   const getLastWord = useCallback(() => {
     if (code.length === 0) return "";
@@ -152,6 +183,7 @@ const BlogWriter = () => {
     const newErrors: typeof errors = {};
 
     if (!title.trim()) newErrors.title = "Title is required";
+    if (!coverImage) newErrors.coverImage = "CoverImage is required";
     if (!slug.trim()) newErrors.slug = "Slug is required";
     if (!publishedAt) newErrors.publishedAt = "Publish date is required";
     if (!summary.trim()) newErrors.summary = "Summary is required";
@@ -159,7 +191,7 @@ const BlogWriter = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [title, slug, publishedAt, summary, code, status]);
+  }, [title, slug, coverImage, publishedAt, summary, code, status]);
 
   const handlePublish = useCallback(
     async (e: React.FormEvent) => {
@@ -171,6 +203,7 @@ const BlogWriter = () => {
 
       let blogData: BlogType & { _id?: string } = {
         title,
+        coverImage: coverImage!,
         slug,
         publishedAt: new Date(publishedAt),
         summary,
@@ -188,7 +221,7 @@ const BlogWriter = () => {
       }
 
       // console.log("[DEBUG] Blog data to publish: ", blogData);
-      const responseStatus = blog ? "update" : "create";
+      const responseStatus = blog ? "updated" : "created";
 
       try {
         const res = await httpAxios.post("/blog", blogData);
@@ -202,48 +235,80 @@ const BlogWriter = () => {
         setIsLoading(false);
       }
     },
-    [title, slug, publishedAt, summary, code, blog, status, validateForm]
+    [
+      title,
+      slug,
+      publishedAt,
+      summary,
+      code,
+      blog,
+      status,
+      coverImage,
+      validateForm,
+    ]
+  );
+
+  const handleToCheckSlugAvailability = useCallback(
+    async (finalSlug: string) => {
+      try {
+        const res = await httpAxios.get(
+          `/blog/${finalSlug}/check?blogId=${blog?._id}`
+        );
+        if (res.data.exist) {
+          setIsSlugExist(true);
+          setErrors((prev) => ({ ...prev, slug: undefined }));
+        } else {
+          setErrors((prev) => ({ ...prev, slug: "Slug is not available" }));
+          setIsSlugExist(false);
+        }
+      } catch (error) {
+        console.error(`[ERROR] Occurred error while slug checking: ${error}`);
+      }
+    },
+    [blog]
   );
 
   const handleSlugCheck = useCallback(
     async (value: string) => {
-      if (to) {
-        clearTimeout(to);
-      }
-
-      const currTO = setTimeout(async () => {
-        if (value.length === 0) {
-          setIsSlugExist(null);
-          setSlug("");
-          return;
+      if (isCustomSlug) {
+        setSlug(value);
+        if (to) {
+          clearTimeout(to);
         }
 
-        const finalSlug = value
-          .toLowerCase()
-          .replace(/[^a-z0-9 ]/g, "")
-          .replace(/\s+/g, " ")
-          .replace(/ /g, "-");
-        console.log(`[DEBUG] Final Slug: ${finalSlug}`);
+        const currTO = setTimeout(async () => {
+          await handleToCheckSlugAvailability(value);
+        }, 500);
 
-        setSlug(finalSlug);
+        setTO(currTO);
+      } else {
+        if (to) {
+          clearTimeout(to);
+        }
 
-        try {
-          const res = await httpAxios.get(`/blog/${finalSlug}/check`);
-          if (res.data.exist) {
-            setIsSlugExist(true);
-            setErrors((prev) => ({ ...prev, slug: undefined }));
-          } else {
-            setErrors((prev) => ({ ...prev, slug: "Slug is not available" }));
-            setIsSlugExist(false);
+        const currTO = setTimeout(async () => {
+          if (value.length === 0) {
+            setIsSlugExist(null);
+            setSlug("");
+            return;
           }
-        } catch (error) {
-          console.error(`[ERROR] Occurred error while slug checking: ${error}`);
-        }
-      }, 500);
 
-      setTO(currTO);
+          const finalSlug = value
+            .toLowerCase()
+            .replace(/[^a-z0-9 ]/g, "")
+            .replace(/\s+/g, " ")
+            .replace(/ /g, "-");
+          // console.log(`[DEBUG] Final Slug: ${finalSlug}`);
+
+          setSlug(finalSlug);
+
+          await handleToCheckSlugAvailability(finalSlug);
+        }, 500);
+
+        setTO(currTO);
+      }
     },
-    [to, setTO]
+    [isCustomSlug, blog, to, setTO]
   );
 
   const handleTitleChange = useCallback(
@@ -251,7 +316,7 @@ const BlogWriter = () => {
       setTitle(e.target.value);
       handleSlugCheck(e.target.value);
     },
-    [setTitle, handleSlugCheck]
+    [isCustomSlug, setTitle, handleSlugCheck]
   );
 
   const handleToDeletePersistedBlogContent = useCallback(() => {
@@ -265,6 +330,7 @@ const BlogWriter = () => {
       // console.log("[DEBUG] Fetched blog: ", res.data.data.blog);
       const fetchedBlog: BlogType = res.data.data.blog;
       setBlog(fetchedBlog);
+      setCoverImage(fetchedBlog.coverImage);
       setTitle(fetchedBlog.title);
       setSlug(fetchedBlog.slug);
       setPublishedAt(
@@ -340,6 +406,49 @@ const BlogWriter = () => {
                         Slug is not available
                       </span>
                     )
+                  ) : (
+                    ""
+                  )}
+                </div>
+                <Button
+                  onClick={() => setIsCustomSlug((prev) => !prev)}
+                  className="w-fit"
+                  type="button"
+                >
+                  {isCustomSlug ? "Custom Slug" : "Auto Generated Slug"}
+                </Button>
+              </div>
+              <div className="grid w-full items-center gap-3">
+                <Label htmlFor="title">Cover Image</Label>
+                <div>
+                  <Input
+                    type="file"
+                    id="coverImage"
+                    onChange={(e) => handleToSetCoverImage(e)}
+                    className={`${errors.title ? "border-red-600" : ""}`}
+                    disabled={isLoading}
+                  />
+                  {errors.coverImage && (
+                    <span className="text-red-600 text-xs pl-1">
+                      {errors.coverImage}
+                    </span>
+                  )}
+
+                  {coverImage ? (
+                    <div className="relative w-[20%] h-auto ">
+                      <Image
+                        src={coverImage}
+                        alt="Cover Image"
+                        width={1080}
+                        height={1080}
+                      />
+                      <button
+                        onClick={() => handleToDeleteImage(coverImage)}
+                        className="absolute top-2 right-2 rounded-full bg-black text-white"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
                   ) : (
                     ""
                   )}
@@ -473,7 +582,7 @@ const BlogWriter = () => {
                             className=" hidden"
                             disabled={isLoading}
                           />
-                          <Image className="h-4 w-4" />
+                          <ImageIcon className="h-4 w-4" />
                         </button>
                         <button
                           type="button"
