@@ -102,9 +102,25 @@ const components = {
   },
 };
 
-const BlogContent = ({ content }: { content: string }) => {
+const BlogContent = ({
+  content,
+  title,
+  coverImage,
+}: {
+  content: string;
+  title: string;
+  coverImage: string;
+}) => {
   return (
     <article className="blog-content">
+      <Image
+        src={coverImage}
+        alt={title}
+        width={1280}
+        height={720}
+        className="mx-auto w-fit max-h-[400px]"
+      />
+      <h1>{title}</h1>
       <MDXRemote source={content} components={{ ...components }} />
     </article>
   );

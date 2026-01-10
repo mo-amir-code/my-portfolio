@@ -66,7 +66,11 @@ export default async function Blog({
 
   return (
     <section id="blog" className="pb-12">
-      <BlogContent content={post.content} />
+      <BlogContent
+        content={post.content}
+        title={post.title}
+        coverImage={post.coverImage}
+      />
     </section>
   );
 }

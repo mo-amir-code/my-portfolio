@@ -643,7 +643,11 @@ const BlogWriter = () => {
                   >
                     {isPreviewHide ? "Show Preview" : "Hide Preview"}
                   </Button>
-                  <BlogContent content={code} />
+                  <BlogContent
+                    content={code}
+                    title={blog?.title || ""}
+                    coverImage={coverImage || ""}
+                  />
                 </div>
               </Suspense>
             )}
