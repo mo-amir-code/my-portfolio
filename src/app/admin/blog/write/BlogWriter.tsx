@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BlogType } from "@/types/app/blog";
-import { ArrowUp, ImageIcon, Link, Loader2, TimerReset, X } from "lucide-react";
+import { ArrowUp, ImageIcon, Link, Loader2, TimerReset, X, Eye, EyeOff, ArrowLeft, Check, Code } from "lucide-react";
 import {
   ChangeEvent,
   Suspense,
@@ -14,10 +14,10 @@ import {
   useState,
 } from "react";
 import { toast } from "sonner";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { BlogContent } from "@/components/blog";
 import { Button } from "@/components/ui/button";
-import { getWithExpiry, removeWithKey, setWithExpiry } from "@/lib/utils";
+import { getWithExpiry, removeWithKey, setWithExpiry, saveDraftArticle, loadDraftArticle, removeDraftArticle, hasExistingDraft, type ArticleDraft } from "@/lib/utils";
 import { BlogStatusType } from "./types";
 import {
   Select,
@@ -29,6 +29,11 @@ import {
 import { BLOG_STATUS } from "@/data/data";
 import { httpAxios } from "@/config/axios";
 import Image from "next/image";
+import BlurFade from "@/components/magicui/blur-fade";
+import { BlogStatusBadge } from "@/components/admin";
+import UploadedImagesManager, {
+  type UploadedImagesManagerRef,
+} from "@/components/admin/UploadedImagesManager";
 
 const BlogWriter = () => {
   const [code, setCode] = useState<string>("");
@@ -43,9 +48,19 @@ const BlogWriter = () => {
   const [blog, setBlog] = useState<(BlogType & { _id?: string }) | null>(null);
   const [isPreviewHide, setIsPreviewHide] = useState<boolean>(true);
   const [isCustomSlug, setIsCustomSlug] = useState<boolean>(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
+  const [previewWidth, setPreviewWidth] = useState<"mobile" | "tablet" | "desktop">("desktop");
   const searchParams = useSearchParams();
+  const router = useRouter();
   const blogId = searchParams.get("blogId");
   const localBlogId = `content-${blogId}`;
+
+  // Preview width mappings
+  const previewWidthMap = {
+    mobile: "max-w-sm",
+    tablet: "max-w-2xl",
+    desktop: "max-w-4xl",
+  };
 
   // Form states
   const [title, setTitle] = useState<string>("");
@@ -57,6 +72,7 @@ const BlogWriter = () => {
   const [status, setStatus] = useState<BlogStatusType>("draft");
 
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const imagesManagerRef = useRef<UploadedImagesManagerRef>(null);
 
   // Error states
   const [errors, setErrors] = useState<{
@@ -83,13 +99,17 @@ const BlogWriter = () => {
     async (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       try {
-        // console.log("[DEBUG] Image upload response: ", res);
         const imgUrl = await handleToUploadImageAndGetURL(file);
         const imagePart = `![${file?.name.replace(
-          /\.[^/.]+$/,
+          /\.[^\/\.]+$/,
           ""
         )}](${imgUrl} "{}")`;
         setCode((prev) => prev + imagePart);
+        setHasUnsavedChanges(true);
+        
+        // Add to Images Manager
+        imagesManagerRef.current?.addImage(imgUrl);
+        
         toast.success("Image uploaded successfully");
       } catch (error) {
         console.error("[ERROR] Occurred while uploading image: ", error);
@@ -166,6 +186,37 @@ const BlogWriter = () => {
     });
   }, [code, getLastWord]);
 
+  const handleOnCodeBlock = useCallback(() => {
+    if (!contentRef.current) return;
+
+    const el = contentRef.current;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+
+    // Selected text
+    const selectedCode = code.slice(start, end);
+
+    let newCode = code;
+    const codeBlockTemplate = `\n\`\`\`language-filename=index.ts highlightLines=[]\n-code-\n${selectedCode || "// Your code here"}
+\`\`\`\n`;
+
+    if (selectedCode.length > 0) {
+      // Replace selected text with code block
+      newCode = code.slice(0, start) + codeBlockTemplate + code.slice(end);
+    } else {
+      // Add code block at end
+      newCode = code + codeBlockTemplate;
+    }
+
+    setCode(newCode);
+    setHasUnsavedChanges(true);
+
+    // Restore focus
+    requestAnimationFrame(() => {
+      el.focus();
+    });
+  }, [code]);
+
   const handleToPersistContent = useCallback(
     (code: string) => {
       if (contentTO) {
@@ -227,6 +278,11 @@ const BlogWriter = () => {
         const res = await httpAxios.post("/blog", blogData);
         setBlog(res.data.data.blog);
         console.log("[DEBUG] Resposne is here: ", res);
+        
+        // Remove draft from local storage on successful save
+        removeDraftArticle(blogId);
+        setHasUnsavedChanges(false);
+        
         toast.success(`Blog ${responseStatus} successfully!`);
       } catch (error) {
         console.error(`[ERROR] Occurred while publishing blog: ${error}`);
@@ -245,6 +301,7 @@ const BlogWriter = () => {
       status,
       coverImage,
       validateForm,
+      blogId,
     ]
   );
 
@@ -319,15 +376,29 @@ const BlogWriter = () => {
     [isCustomSlug, setTitle, handleSlugCheck]
   );
 
-  const handleToDeletePersistedBlogContent = useCallback(() => {
-    removeWithKey(localBlogId);
-    fetchBlog();
-  }, [localBlogId, removeWithKey]);
-
   const fetchBlog = useCallback(async () => {
     try {
+      // Try to load from draft first
+      const draft = loadDraftArticle(blogId);
+      
+      if (draft) {
+        console.log("[DEBUG] Loading from draft:", draft);
+        // Load from draft
+        setTitle(draft.title);
+        setSlug(draft.slug);
+        setPublishedAt(draft.publishedAt);
+        setSummary(draft.summary);
+        setStatus(draft.status as BlogStatusType);
+        setCoverImage(draft.coverImage);
+        setCode(draft.content);
+        setHasUnsavedChanges(false);
+        toast.info("Loaded from draft - changes not saved to server yet");
+        return;
+      }
+
+      // Fetch from server
       const res = await httpAxios.get(`/blog/${blogId}`);
-      // console.log("[DEBUG] Fetched blog: ", res.data.data.blog);
+      console.log("[DEBUG] Fetched blog from server:", res.data.data.blog);
       const fetchedBlog: BlogType = res.data.data.blog;
       setBlog(fetchedBlog);
       setCoverImage(fetchedBlog.coverImage);
@@ -338,322 +409,512 @@ const BlogWriter = () => {
       );
       setSummary(fetchedBlog.summary);
       setStatus(fetchedBlog.status);
+      setCode(fetchedBlog.content);
 
-      const content = getWithExpiry(localBlogId);
-      // console.log("CONTENT: ", content);
-      setCode(content ?? fetchedBlog.content);
+      // Auto-save as draft for server-loaded articles
+      const draftData: ArticleDraft = {
+        title: fetchedBlog.title,
+        slug: fetchedBlog.slug,
+        publishedAt: new Date(fetchedBlog.publishedAt).toISOString().split("T")[0],
+        summary: fetchedBlog.summary,
+        status: fetchedBlog.status,
+        coverImage: fetchedBlog.coverImage,
+        content: fetchedBlog.content,
+        updatedAt: Date.now(),
+      };
+      saveDraftArticle(blogId, draftData);
+      setHasUnsavedChanges(false);
     } catch (error) {
       console.error("[ERROR] Occurred while fetching blog: ", error);
+      toast.error("Failed to load article");
     }
-  }, [blogId, localBlogId]);
+  }, [blogId]);
+
+  const handleToDeletePersistedBlogContent = useCallback(() => {
+    // Remove old persisted content
+    removeWithKey(localBlogId);
+    // Remove draft
+    removeDraftArticle(blogId);
+    // Reload from server
+    fetchBlog();
+  }, [localBlogId, blogId, fetchBlog]);
 
   useEffect(() => {
-    if (!blogId) return;
-    fetchBlog();
-  }, [blogId, localBlogId, fetchBlog]);
+    if (blogId) {
+      // Editing existing article
+      fetchBlog();
+    } else {
+      // New article - check for existing draft
+      const existingDraft = loadDraftArticle(null);
+      if (existingDraft) {
+        console.log("[DEBUG] Loading existing new article draft");
+        setTitle(existingDraft.title);
+        setSlug(existingDraft.slug);
+        setPublishedAt(existingDraft.publishedAt);
+        setSummary(existingDraft.summary);
+        setStatus(existingDraft.status as BlogStatusType);
+        setCoverImage(existingDraft.coverImage);
+        setCode(existingDraft.content);
+        setHasUnsavedChanges(false);
+        toast.info("Loaded last draft of new article");
+      }
+    }
+  }, [blogId, fetchBlog]);
+
+  // Auto-save draft on content changes (debounced)
+  useEffect(() => {
+    if (!title.trim() && !code.trim()) {
+      // Don't save empty articles
+      return;
+    }
+
+    const saveTimer = setTimeout(() => {
+      const draftData: ArticleDraft = {
+        title,
+        slug,
+        publishedAt,
+        summary,
+        status,
+        coverImage: coverImage || "",
+        content: code,
+        updatedAt: Date.now(),
+      };
+      saveDraftArticle(blogId, draftData);
+      console.log("[DEBUG] Auto-saved draft for", blogId ? `article ${blogId}` : "new article");
+    }, 3000); // Save after 3 seconds of inactivity
+
+    return () => clearTimeout(saveTimer);
+  }, [title, slug, publishedAt, summary, status, coverImage, code, blogId]);
 
   return (
-    <div className="flex justify-center gap-4 py-12">
-      <div className="w-full">
-        <form onSubmit={handlePublish} className="space-y-4">
-          {/* Metadata */}
-          <div className="space-y-4 max-w-2xl mx-auto">
-            <TypographyH2 text="Metadata" />
-            <div className="space-y-3">
-              <div className="grid w-full items-center gap-3">
-                <Label htmlFor="title">Title</Label>
-                <div>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <BlurFade delay={0.1} className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.back()}
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div>
+              <h1 className="font-bold text-xl">{blog ? "Edit Article" : "Write Article"}</h1>
+              {blog && (
+                <div className="flex items-center gap-2 mt-1">
+                  <BlogStatusBadge status={status} />
+                  {hasUnsavedChanges && (
+                    <span className="text-xs text-amber-600">Unsaved changes</span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+          <Button
+            onClick={(e) => {
+              handlePublish(e as any);
+              setHasUnsavedChanges(false);
+            }}
+            disabled={isLoading}
+            className="flex items-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Check className="w-4 h-4" />
+                Save Article
+              </>
+            )}
+          </Button>
+        </div>
+      </BlurFade>
+
+      <form onSubmit={handlePublish} className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Metadata Section */}
+            <BlurFade delay={0.2}>
+              <div className="border rounded-lg p-6 space-y-4">
+                <h2 className="font-bold text-lg">Article Details</h2>
+
+                {/* Title */}
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-sm font-medium">
+                    Title
+                  </Label>
                   <Input
                     type="text"
                     autoFocus
                     id="title"
                     value={title}
                     onChange={handleTitleChange}
-                    placeholder="Enter title here..."
-                    className={`${errors.title ? "border-red-600" : ""}`}
+                    placeholder="Enter article title..."
+                    className={`${errors.title ? "border-red-600 bg-red-50 dark:bg-red-950/20" : ""}`}
                     disabled={isLoading}
                   />
                   {errors.title && (
-                    <span className="text-red-600 text-xs pl-1">
-                      {errors.title}
-                    </span>
+                    <p className="text-red-600 text-xs">{errors.title}</p>
                   )}
                 </div>
-              </div>
-              <div className="grid w-full items-center gap-3">
-                <Label htmlFor="slug">Slug</Label>
-                <div>
+
+                {/* Slug */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="slug" className="text-sm font-medium">
+                      Slug
+                    </Label>
+                    <Button
+                      onClick={() => setIsCustomSlug((prev) => !prev)}
+                      variant="outline"
+                      size="sm"
+                      type="button"
+                    >
+                      {isCustomSlug ? "Custom" : "Auto"}
+                    </Button>
+                  </div>
                   <Input
                     type="text"
                     id="slug"
                     value={slug}
-                    onChange={(e) => handleSlugCheck(e.target.value)}
-                    placeholder="Enter slug here..."
-                    className={`${errors.slug ? "border-red-600" : ""}`}
+                    onChange={(e) => {
+                      handleSlugCheck(e.target.value);
+                      setHasUnsavedChanges(true);
+                    }}
+                    placeholder="article-slug"
+                    className={`font-mono text-sm ${errors.slug ? "border-red-600 bg-red-50 dark:bg-red-950/20" : ""}`}
                     disabled={isLoading}
                   />
-                  {errors.slug ? (
-                    <span className="text-red-600 text-xs pl-1">
-                      {errors.slug}
-                    </span>
-                  ) : isSlugExist !== null ? (
-                    isSlugExist ? (
-                      <span className="text-green-600 text-xs pl-1">
-                        Slug is available
-                      </span>
+                  <div className="flex items-center gap-2">
+                    {errors.slug ? (
+                      <p className="text-red-600 text-xs">{errors.slug}</p>
+                    ) : isSlugExist !== null ? (
+                      isSlugExist ? (
+                        <div className="flex items-center gap-1 text-green-600 text-xs">
+                          <Check className="w-3 h-3" />
+                          Available
+                        </div>
+                      ) : (
+                        <p className="text-red-600 text-xs">Not available</p>
+                      )
                     ) : (
-                      <span className="text-red-600 text-xs pl-1">
-                        Slug is not available
-                      </span>
-                    )
-                  ) : (
-                    ""
-                  )}
+                      <p className="text-muted-foreground text-xs">Checking...</p>
+                    )}
+                  </div>
                 </div>
-                <Button
-                  onClick={() => setIsCustomSlug((prev) => !prev)}
-                  className="w-fit"
-                  type="button"
-                >
-                  {isCustomSlug ? "Custom Slug" : "Auto Generated Slug"}
-                </Button>
-              </div>
-              <div className="grid w-full items-center gap-3">
-                <Label htmlFor="title">Cover Image</Label>
-                <div>
-                  <Input
-                    type="file"
-                    id="coverImage"
-                    onChange={(e) => handleToSetCoverImage(e)}
-                    className={`${errors.title ? "border-red-600" : ""}`}
-                    disabled={isLoading}
-                  />
-                  {errors.coverImage && (
-                    <span className="text-red-600 text-xs pl-1">
-                      {errors.coverImage}
-                    </span>
-                  )}
 
-                  {coverImage ? (
-                    <div className="relative w-[20%] h-auto ">
-                      <Image
-                        src={coverImage}
-                        alt="Cover Image"
-                        width={1080}
-                        height={1080}
-                      />
-                      <button
-                        onClick={() => handleToDeleteImage(coverImage)}
-                        className="absolute top-2 right-2 rounded-full bg-black text-white"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </div>
-              <div className="grid w-full items-center gap-3">
-                <Label htmlFor="publishedAt">Publish Date</Label>
-                <div>
+                {/* Publish Date */}
+                <div className="space-y-2">
+                  <Label htmlFor="publishedAt" className="text-sm font-medium">
+                    Publish Date
+                  </Label>
                   <Input
                     type="date"
                     id="publishedAt"
                     value={publishedAt}
-                    onChange={(e) => setPublishedAt(e.target.value)}
-                    placeholder="Publish date"
-                    className={`${errors.publishedAt ? "border-red-600" : ""}`}
+                    onChange={(e) => {
+                      setPublishedAt(e.target.value);
+                      setHasUnsavedChanges(true);
+                    }}
+                    className={errors.publishedAt ? "border-red-600 bg-red-50 dark:bg-red-950/20" : ""}
                     disabled={isLoading}
                   />
                   {errors.publishedAt && (
-                    <span className="text-red-600 text-xs pl-1">
-                      {errors.publishedAt}
-                    </span>
+                    <p className="text-red-600 text-xs">{errors.publishedAt}</p>
                   )}
                 </div>
-              </div>
-              <div className="grid w-full items-center gap-3">
-                <Label htmlFor="summary">Summary</Label>
-                <div>
+
+                {/* Summary */}
+                <div className="space-y-2">
+                  <Label htmlFor="summary" className="text-sm font-medium">
+                    Summary
+                  </Label>
                   <Textarea
                     id="summary"
                     value={summary}
-                    onChange={(e) => setSummary(e.target.value)}
-                    placeholder="Enter summary here..."
-                    className={`${errors.summary ? "border-red-600" : ""}`}
+                    onChange={(e) => {
+                      setSummary(e.target.value);
+                      setHasUnsavedChanges(true);
+                    }}
+                    placeholder="Brief description of your article..."
+                    rows={3}
+                    className={`resize-none ${errors.summary ? "border-red-600 bg-red-50 dark:bg-red-950/20" : ""}`}
                     disabled={isLoading}
                   />
+                  <div className="text-xs text-muted-foreground">
+                    {summary.length}/160 characters
+                  </div>
                   {errors.summary && (
-                    <span className="text-red-600 text-xs pl-1">
-                      {errors.summary}
-                    </span>
+                    <p className="text-red-600 text-xs">{errors.summary}</p>
                   )}
                 </div>
-              </div>
-              <div className="grid w-full items-center gap-3">
-                <Label htmlFor="summary">Status</Label>
-                <div>
+
+                {/* Status */}
+                <div className="space-y-2">
+                  <Label htmlFor="status" className="text-sm font-medium">
+                    Status
+                  </Label>
                   <Select
-                    onValueChange={(val: BlogStatusType) => setStatus(val)}
+                    onValueChange={(val: BlogStatusType) => {
+                      setStatus(val);
+                      setHasUnsavedChanges(true);
+                    }}
                     value={status}
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="draft" />
+                    <SelectTrigger id="status">
+                      <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
                       {BLOG_STATUS.map((st) => (
                         <SelectItem key={st} value={st}>
-                          {st}
+                          <div className="flex items-center gap-2 capitalize">
+                            {st}
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  {errors.summary && (
-                    <span className="text-red-600 text-xs pl-1">
-                      {errors.summary}
-                    </span>
+                </div>
+              </div>
+            </BlurFade>
+
+            {/* Editor Section */}
+            <BlurFade delay={0.3}>
+              <div className="border rounded-lg overflow-hidden flex flex-col h-[500px]">
+                <div className="flex items-center justify-between p-4 border-b bg-muted/50">
+                  <h3 className="font-bold text-sm">Content (MDX)</h3>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() => setIsPreviewHide((prev) => !prev)}
+                      variant="outline"
+                      size="sm"
+                      type="button"
+                      className="flex items-center gap-2"
+                    >
+                      {isPreviewHide ? (
+                        <>
+                          <Eye className="w-3 h-3" />
+                          Show Preview
+                        </>
+                      ) : (
+                        <>
+                          <EyeOff className="w-3 h-3" />
+                          Hide Preview
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Textarea */}
+                <textarea
+                  placeholder="Write your article in MDX format...\n\n# Heading\n\nYour content here..."
+                  ref={contentRef}
+                  value={code}
+                  onChange={(e) => {
+                    setCode(e.target.value);
+                    setHasUnsavedChanges(true);
+                    handleToPersistContent(e.target.value);
+                  }}
+                  disabled={isLoading}
+                  className="flex-1 px-4 py-3 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 font-mono text-sm resize-none"
+                />
+
+                {/* Toolbar */}
+                <div className="flex items-center justify-between p-3 border-t bg-muted/50">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => imgRef.current?.click()}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+                      disabled={isLoading}
+                      title="Insert image"
+                    >
+                      <input
+                        ref={imgRef}
+                        type="file"
+                        onChange={handleOnImageSelect}
+                        accept="image/*"
+                        className="hidden"
+                        disabled={isLoading}
+                      />
+                      <ImageIcon className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleOnLink}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+                      disabled={isLoading}
+                      title="Insert link"
+                    >
+                      <Link className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleOnCodeBlock}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+                      disabled={isLoading}
+                      title="Insert code block"
+                    >
+                      <Code className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+                    disabled={isLoading}
+                    onClick={handleToDeletePersistedBlogContent}
+                    title="Reset content"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <TimerReset className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+              {errors.content && (
+                <p className="text-red-600 text-xs mt-2">{errors.content}</p>
+              )}
+            </BlurFade>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Cover Image */}
+            <BlurFade delay={0.4}>
+              <div className="border rounded-lg p-6 space-y-4">
+                <h3 className="font-bold text-sm">Cover Image</h3>
+                <div className="space-y-3">
+                  <Input
+                    type="file"
+                    id="coverImage"
+                    onChange={handleToSetCoverImage}
+                    className={errors.coverImage ? "border-red-600" : ""}
+                    disabled={isLoading}
+                    accept="image/*"
+                  />
+                  {errors.coverImage && (
+                    <p className="text-red-600 text-xs">{errors.coverImage}</p>
+                  )}
+
+                  {coverImage && (
+                    <div className="relative group">
+                      <div className="relative w-full h-40 bg-muted rounded-lg overflow-hidden">
+                        <Image
+                          src={coverImage}
+                          alt="Cover Image"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          setCoverImage(null);
+                          handleToDeleteImage(coverImage);
+                        }}
+                        className="absolute top-2 right-2 rounded-md bg-black/70 text-white p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        type="button"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
-            </div>
+            </BlurFade>
+
+            {/* Uploaded Images Manager */}
+            <BlurFade delay={0.45}>
+              <UploadedImagesManager
+                ref={imagesManagerRef}
+                mdxCode={code}
+                onImageUrlCopied={(url) => {
+                  const imagePart = `![uploaded](${url} "{}")`;
+                  setCode((prev) => prev + imagePart);
+                  setHasUnsavedChanges(true);
+                }}
+              />
+            </BlurFade>
           </div>
+        </div>
 
-          {/* Blog Content */}
-          <div className="flex justify-center gap-4 h-[90vh] overflow-hidden">
-            {/* Source */}
-            <div
-              className={`${isPreviewHide ? "max-w-5xl" : "max-w-2xl"} w-full`}
-            >
-              <div className="sticky top-0">
-                <div className="flex justify-between items-center">
-                  <TypographyH2 text="Content" />
-
-                  {isPreviewHide ? (
-                    <Button
-                      className="mb-2"
-                      onClick={() => setIsPreviewHide((prev) => !prev)}
-                      type="button"
-                    >
-                      {isPreviewHide ? "Show Preview" : "Hide Preview"}
-                    </Button>
-                  ) : (
-                    ""
-                  )}
+        {/* Full Width Preview Section */}
+        {!isPreviewHide && (
+          <BlurFade delay={0.5} className="w-full">
+            <div className="border-t mt-6 pt-6 px-6 pb-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-lg">Preview</h3>
+                  <span className="text-sm text-muted-foreground capitalize font-medium">
+                    {previewWidth === "mobile" && "📱 Mobile (384px)"}
+                    {previewWidth === "tablet" && "📌 Tablet (672px)"}
+                    {previewWidth === "desktop" && "🖥️ Desktop (896px)"}
+                  </span>
                 </div>
-                <div className="flex items-center justify-center bg-background">
-                  <div className={`w-full border bg-card shadow-lg`}>
-                    {/* Search Input */}
-                    <div className="p-4">
-                      <textarea
-                        placeholder="Write here"
-                        className={`w-full bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed`}
-                        rows={15}
-                        ref={contentRef}
-                        value={code}
-                        onChange={(e) => {
-                          setCode(e.target.value);
-                          handleToPersistContent(e.target.value);
-                        }}
-                        disabled={isLoading}
+                
+                {/* Screen Size Buttons */}
+                <div className="flex items-center gap-2 border rounded-md p-1 bg-muted/50 w-fit">
+                  <button
+                    onClick={() => setPreviewWidth("mobile")}
+                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                      previewWidth === "mobile"
+                        ? "bg-foreground text-background"
+                        : "bg-transparent text-foreground hover:bg-muted"
+                    }`}
+                    type="button"
+                  >
+                    📱 Mobile
+                  </button>
+                  <button
+                    onClick={() => setPreviewWidth("tablet")}
+                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                      previewWidth === "tablet"
+                        ? "bg-foreground text-background"
+                        : "bg-transparent text-foreground hover:bg-muted"
+                    }`}
+                    type="button"
+                  >
+                    📌 Tablet
+                  </button>
+                  <button
+                    onClick={() => setPreviewWidth("desktop")}
+                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                      previewWidth === "desktop"
+                        ? "bg-foreground text-background"
+                        : "bg-transparent text-foreground hover:bg-muted"
+                    }`}
+                    type="button"
+                  >
+                    🖥️ Desktop
+                  </button>
+                </div>
+              </div>
+
+              {/* Preview Container */}
+              <Suspense fallback={<div className="py-8 text-center">Loading preview...</div>}>
+                <div className={`flex justify-center py-8 min-h-[500px] ${previewWidth === "mobile" ? "bg-muted/30 rounded-lg" : ""}`}>
+                  <div className={`${previewWidthMap[previewWidth]} w-full px-4`}>
+                    <div className="bg-background border rounded-lg p-8 space-y-4">
+                      <BlogContent
+                        content={code}
+                        title={title || "Your Article"}
+                        coverImage={coverImage || ""}
                       />
-                    </div>
-
-                    {/* Divider */}
-                    <div className="border-t" />
-
-                    {/* Bottom Bar */}
-                    <div className="flex items-center justify-between p-3">
-                      {/* Left Section */}
-                      <div className="flex items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            imgRef.current && imgRef.current.click()
-                          }
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={isLoading}
-                        >
-                          <input
-                            ref={imgRef}
-                            type="file"
-                            onChange={(e) => handleOnImageSelect(e)}
-                            accept="image/*"
-                            className=" hidden"
-                            disabled={isLoading}
-                          />
-                          <ImageIcon className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleOnLink()}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={isLoading}
-                        >
-                          <Link className="h-4 w-4" />
-                        </button>
-                        {/* <span className="text-sm text-muted-foreground">Auto</span> */}
-                      </div>
-
-                      {/* Right Section */}
-                      <div className="flex items-center gap-3">
-                        {/* <span className="text-sm text-muted-foreground">52% used</span> */}
-                        <button
-                          type="button"
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={isLoading}
-                          onClick={() => handleToDeletePersistedBlogContent()}
-                        >
-                          {isLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <TimerReset className="h-4 w-4" />
-                          )}
-                        </button>
-                        <button
-                          type="submit"
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={isLoading}
-                        >
-                          {isLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <ArrowUp className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Preview */}
-            {isPreviewHide ? (
-              ""
-            ) : (
-              <Suspense
-                fallback={<div className="max-w-2xl w-full">Loading...</div>}
-              >
-                <div className="max-w-2xl w-full py-6 overflow-y-auto">
-                  <Button
-                    className="mb-2"
-                    onClick={() => setIsPreviewHide((prev) => !prev)}
-                    type="button"
-                  >
-                    {isPreviewHide ? "Show Preview" : "Hide Preview"}
-                  </Button>
-                  <BlogContent
-                    content={code}
-                    title={blog?.title || ""}
-                    coverImage={coverImage || ""}
-                  />
-                </div>
               </Suspense>
-            )}
-          </div>
-        </form>
-      </div>
+            </div>
+          </BlurFade>
+        )}
+      </form>
     </div>
   );
 };

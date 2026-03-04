@@ -3,15 +3,15 @@ import Blog from "@/models/Blog";
 import { NextRequest, NextResponse } from "next/server";
 
 
-export async function GET(_req: NextRequest, { params }: { params: { slug: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: { blogId: string } }) {
     // console.log("[DEBUG] Received GET request for blog: ", params);
-    const { slug } = params;
-    // console.log("[DEBUG] Fetching blog with slug: ", slug);
+    const { blogId } = params;
+    // console.log("[DEBUG] Fetching blog with blogId: ", blogId);
 
     await connectToDB();
 
     try {
-        const blog = await Blog.findOne({ slug })
+        const blog = await Blog.findOne({ _id: blogId }).lean();
         if (!blog) {
             return NextResponse.json({ message: "Blog not found" }, { status: 404 })
         }

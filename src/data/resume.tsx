@@ -82,6 +82,19 @@ export const DATA = {
   },
   work: [
     {
+      company: "CloudKeeper",
+      href: "https://lp.cloudkeeper.com/",
+      badges: [],
+      location: "OnSite",
+      title: "DevOps Trainee",
+      logoUrl: "https://d9hhrg4mnvzow.cloudfront.net/lp.cloudkeeper.com/cloud-cost-review/47c970ba-cloudkeeper-new.svg",
+      start: "Jan 2026",
+      end: "Present",
+      technologies: ["AWS", "Docker", "Linux"],
+      description:
+        "DevOps Trainee focused on AWS cloud services, learning infrastructure automation, CI/CD pipelines, and scalable deployment practices.",
+    },
+    {
       company: "Freelancer",
       href: "https://myhoc.in/",
       badges: [],

@@ -129,10 +129,10 @@ const BlogContent = ({
 }) => {
   const publishedDate = publishedAt
     ? new Date(publishedAt.toString()).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
     : "";
 
   return (
@@ -188,15 +188,13 @@ const BlogContent = ({
       {/* Cover Image */}
       {coverImage && (
         <BlurFade delay={BLUR_FADE_DELAY * 1.2}>
-          <div className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden border bg-muted">
-            <Image
-              src={coverImage}
-              alt={title}
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
+          <Image
+            src={coverImage}
+            alt={title}
+            width={1280}
+            height={720}
+            className="mx-auto w-fit"
+          />
         </BlurFade>
       )}
 

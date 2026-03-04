@@ -100,3 +100,66 @@ export async function verifyJWTToken(
     return { valid: false };
   }
 }
+
+// Article draft persistence utilities
+const DRAFT_KEY_NEW = "draft-new-article";
+const DRAFT_TTL = 1000 * 60 * 60 * 24; // 24 hours
+
+export function getDraftArticleKey(blogId: string | null): string {
+  return blogId ? `draft-${blogId}` : DRAFT_KEY_NEW;
+}
+
+export interface ArticleDraft {
+  title: string;
+  slug: string;
+  publishedAt: string;
+  summary: string;
+  status: string;
+  coverImage: string | null;
+  content: string;
+  updatedAt: number;
+}
+
+export function saveDraftArticle(blogId: string | null, articleData: ArticleDraft) {
+  const key = getDraftArticleKey(blogId);
+  const draftWithTimestamp = {
+    ...articleData,
+    updatedAt: Date.now(),
+  };
+  setWithExpiry(key, JSON.stringify(draftWithTimestamp), DRAFT_TTL);
+}
+
+export function loadDraftArticle(blogId: string | null): ArticleDraft | null {
+  const key = getDraftArticleKey(blogId);
+  const itemStr = localStorage.getItem(key);
+  
+  if (!itemStr) return null;
+
+  try {
+    const item = JSON.parse(itemStr);
+    const now = Date.now();
+
+    // Check expiry
+    if (now > item.expiry) {
+      localStorage.removeItem(key);
+      return null;
+    }
+
+    // Parse the actual draft data
+    const draftData = JSON.parse(item.value);
+    return draftData;
+  } catch (error) {
+    console.error("[ERROR] Failed to load draft article:", error);
+    return null;
+  }
+}
+
+export function removeDraftArticle(blogId: string | null) {
+  const key = getDraftArticleKey(blogId);
+  localStorage.removeItem(key);
+}
+
+export function hasExistingDraft(blogId: string | null): boolean {
+  const draft = loadDraftArticle(blogId);
+  return draft !== null;
+}
