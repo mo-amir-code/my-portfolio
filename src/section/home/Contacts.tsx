@@ -1,32 +1,31 @@
 import BlurFade from "@/components/magicui/blur-fade";
 import { BLUR_FADE_DELAY } from "@/data";
-import { DATA } from "@/data/resume";
-import Link from "next/link";
+import ContactForm from "@/components/contact/ContactForm";
+import { TypographyH2 } from "@/components/typography";
 
 const Contacts = () => {
+
+
   return (
-    <section id="contact">
-      <div className="grid items-center justify-center gap-4 text-center w-full py-12">
+    <section id="contact" className="pb-12" >
+      <div className="w-full">
+        {/* Header */}
         <BlurFade delay={BLUR_FADE_DELAY * 16}>
-          <div className="">
-            {/* <div className="inline-block rounded-lg bg-foreground text-background px-3 py-1 text-sm">
-              Contact
-            </div> */}
-            <h2 className="text-3xl border py-2 font-bold tracking-tighter sm:text-5xl">
-              Get in Touch
-            </h2>
-            <p className="mx-auto p-4 border border-t-0 text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Want to chat? Just shoot me a dm{" "}
-              <Link
-                href={DATA.contact.social.X.url}
-                className="text-blue-500 hover:underline"
-              >
-                with a direct question on twitter
-              </Link>{" "}
-              and I&apos;ll respond whenever I can. I will ignore all
-              soliciting.
-            </p>
-          </div>
+          <TypographyH2 text="Get in Touch" className="border" isBordered />
+        </BlurFade>
+
+        {/* Description */}
+        <BlurFade delay={BLUR_FADE_DELAY * 16.5}>
+          <p className="text-muted-foreground border border-t-0 border-r border-b border-l p-2 md:text-lg/relaxed lg:text-base/relaxed xl:text-lg/relaxed">
+            Have a project in mind or want to collaborate? I&apos;d love to hear
+            from you. Send me a message below and I&apos;ll get back to you as
+            soon as possible.
+          </p>
+        </BlurFade>
+
+        {/* Contact Form */}
+        <BlurFade delay={BLUR_FADE_DELAY * 17} className="border border-t-0 border-r border-b border-l p-6">
+          <ContactForm />
         </BlurFade>
       </div>
     </section>
