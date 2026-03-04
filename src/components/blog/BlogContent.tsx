@@ -3,11 +3,12 @@ import "./blogContent.css";
 import { CodeBlock } from "../ui/code-block";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, ChevronRight, ArrowLeft, Share2 } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Error from "./Error";
 import BlurFade from "../magicui/blur-fade";
 import { BLUR_FADE_DELAY } from "@/data";
 import { IBlogDocument } from "@/models/Blog";
+import { BlogNavigation } from "./index";
 
 const components = {
   code: (props: any) => {
@@ -137,36 +138,15 @@ const BlogContent = ({
   return (
     <article className="blog-content space-y-8">
       {/* Navigation */}
-      <BlurFade delay={BLUR_FADE_DELAY * 0.8}>
-        <div className="flex items-center justify-between py-4 border-b">
-          <nav className="flex items-center gap-2 text-sm">
-            <Link
-              href="/"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Home
-            </Link>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <Link
-              href="/blog"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Articles
-            </Link>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <span className="font-medium text-foreground truncate max-w-xs">
-              {title}
-            </span>
-          </nav>
-          <Link
-            href="/blog"
-            className="flex items-center gap-2 text-sm px-3 py-1.5 border rounded-md hover:bg-secondary/50 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Back</span>
-          </Link>
-        </div>
-      </BlurFade>
+      <BlogNavigation
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: "Articles", href: "/blog" },
+          { label: "article info." },
+        ]}
+        backLink={{ href: "/blog", label: "Back" }}
+        delay={BLUR_FADE_DELAY * 0.8}
+      />
 
       {/* Header Section */}
       <BlurFade delay={BLUR_FADE_DELAY * 1}>

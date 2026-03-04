@@ -4,8 +4,7 @@ import { DATA } from "@/data/resume";
 import { Blogs } from "@/section/blog";
 import { Metadata } from "next";
 import { getBlogPosts } from "@/data/blog";
-import Link from "next/link";
-import { ChevronRight, ArrowLeft } from "lucide-react";
+import { BlogNavigation } from "@/components/blog";
 
 export const metadata: Metadata = {
   title: {
@@ -25,30 +24,17 @@ export default async function BlogPage() {
   );
 
   return (
-    <div className="py-6 md:py-12">
+    <div>
       <div className="space-y-8">
-        {/* Navigation Section */}
-        <BlurFade delay={BLUR_FADE_DELAY * 0.8}>
-          <div className="flex items-center justify-between">
-            <nav className="flex items-center gap-2 text-sm">
-              <Link
-                href="/"
-                className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-              >
-                Home
-              </Link>
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              <span className="font-medium text-foreground">Articles</span>
-            </nav>
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-sm px-3 py-1.5 border rounded-md hover:bg-secondary/50 transition-colors duration-200"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">Back</span>
-            </Link>
-          </div>
-        </BlurFade>
+        {/* Navigation */}
+        <BlogNavigation
+          breadcrumbs={[
+            { label: "Home", href: "/" },
+            { label: "Articles" },
+          ]}
+          backLink={{ href: "/", label: "Back" }}
+          delay={BLUR_FADE_DELAY * 0.8}
+        />
 
         {/* Header Section */}
         <div className="space-y-4">
@@ -67,7 +53,7 @@ export default async function BlogPage() {
 
         {/* Stats Section */}
         <BlurFade delay={BLUR_FADE_DELAY * 1.4}>
-          <div className="grid grid-cols-3 gap-4 md:gap-6 border rounded-lg p-4 md:p-6">
+          <div className="grid grid-cols-3 gap-4 md:gap-6 border p-4 md:p-6">
             <div className="border-r last:border-r-0 pr-4 md:pr-6">
               <div className="text-2xl md:text-3xl font-bold">{posts.length}</div>
               <p className="text-xs md:text-sm text-muted-foreground mt-1">
