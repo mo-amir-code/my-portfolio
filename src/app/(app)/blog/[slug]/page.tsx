@@ -64,12 +64,26 @@ export default async function Blog({
     notFound();
   }
 
+  const posts = await getBlogPosts();
+  const currentIndex = posts.findIndex((p) => p.slug === post.slug);
+  const prevPost = currentIndex > 0 ? posts[currentIndex - 1] : null;
+  const nextPost = currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
+
+  const wordCount = post.content.split(/\s+/).length;
+  const readTime = Math.ceil(wordCount / 200); // Average 200 words per minute
+
   return (
     <section id="blog" className="pb-12">
       <BlogContent
         content={post.content}
         title={post.title}
         coverImage={post.coverImage}
+        publishedAt={post.publishedAt}
+        summary={post.summary}
+        readTime={readTime}
+        prevPost={prevPost}
+        nextPost={nextPost}
+        slug={post.slug}
       />
     </section>
   );

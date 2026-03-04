@@ -3,8 +3,11 @@ import "./blogContent.css";
 import { CodeBlock } from "../ui/code-block";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ChevronRight, ArrowLeft, Share2 } from "lucide-react";
 import Error from "./Error";
+import BlurFade from "../magicui/blur-fade";
+import { BLUR_FADE_DELAY } from "@/data";
+import { IBlogDocument } from "@/models/Blog";
 
 const components = {
   code: (props: any) => {
@@ -106,22 +109,169 @@ const BlogContent = ({
   content,
   title,
   coverImage,
+  publishedAt,
+  summary,
+  readTime,
+  prevPost,
+  nextPost,
+  slug,
 }: {
   content: string;
   title: string;
   coverImage: string;
+  publishedAt?: Date;
+  summary?: string;
+  readTime?: number;
+  prevPost?: IBlogDocument | null;
+  nextPost?: IBlogDocument | null;
+  slug?: string;
 }) => {
+  const publishedDate = publishedAt
+    ? new Date(publishedAt.toString()).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "";
+
   return (
-    <article className="blog-content">
-      <Image
-        src={coverImage}
-        alt={title}
-        width={1280}
-        height={720}
-        className="mx-auto w-fit max-h-[400px]"
-      />
-      <h1>{title}</h1>
-      <MDXRemote source={content} components={{ ...components }} />
+    <article className="blog-content space-y-8">
+      {/* Navigation */}
+      <BlurFade delay={BLUR_FADE_DELAY * 0.8}>
+        <div className="flex items-center justify-between py-4 border-b">
+          <nav className="flex items-center gap-2 text-sm">
+            <Link
+              href="/"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Home
+            </Link>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            <Link
+              href="/blog"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Articles
+            </Link>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            <span className="font-medium text-foreground truncate max-w-xs">
+              {title}
+            </span>
+          </nav>
+          <Link
+            href="/blog"
+            className="flex items-center gap-2 text-sm px-3 py-1.5 border rounded-md hover:bg-secondary/50 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Back</span>
+          </Link>
+        </div>
+      </BlurFade>
+
+      {/* Header Section */}
+      <BlurFade delay={BLUR_FADE_DELAY * 1}>
+        <div className="space-y-4 w-full">
+          {/* Title */}
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
+            {title}
+          </h1>
+
+          {/* Meta Information */}
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            {publishedDate && (
+              <div className="flex items-center gap-2">
+                <time dateTime={publishedAt?.toString()}>
+                  {publishedDate}
+                </time>
+              </div>
+            )}
+            {readTime && (
+              <>
+                <span className="hidden sm:block">•</span>
+                <div className="flex items-center gap-2">
+                  <span>{readTime} min read</span>
+                </div>
+              </>
+            )}
+            {summary && (
+              <>
+                <span className="hidden sm:block">•</span>
+                <p className="text-muted-foreground line-clamp-2 md:line-clamp-none">
+                  {summary}
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      </BlurFade>
+
+      {/* Cover Image */}
+      {coverImage && (
+        <BlurFade delay={BLUR_FADE_DELAY * 1.2}>
+          <div className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden border bg-muted">
+            <Image
+              src={coverImage}
+              alt={title}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+        </BlurFade>
+      )}
+
+      {/* Content */}
+      <BlurFade delay={BLUR_FADE_DELAY * 1.4}>
+        <div className="prose prose-sm md:prose-base max-w-none dark:prose-invert">
+          <MDXRemote source={content} components={{ ...components }} />
+        </div>
+      </BlurFade>
+
+      {/* Divider */}
+      <div className="border-t pt-8" />
+
+      {/* Navigation Articles */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {prevPost ? (
+          <BlurFade delay={BLUR_FADE_DELAY * 1.6}>
+            <Link href={`/blog/${prevPost.slug}`}>
+              <div className="group p-4 border rounded-lg hover:bg-secondary/50 transition-colors h-full">
+                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                  ← Previous Article
+                </div>
+                <h3 className="font-semibold group-hover:text-primary transition-colors line-clamp-2">
+                  {prevPost.title}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2 line-clamp-1">
+                  {prevPost.summary}
+                </p>
+              </div>
+            </Link>
+          </BlurFade>
+        ) : (
+          <div />
+        )}
+
+        {nextPost ? (
+          <BlurFade delay={BLUR_FADE_DELAY * 1.6}>
+            <Link href={`/blog/${nextPost.slug}`}>
+              <div className="group p-4 border rounded-lg hover:bg-secondary/50 transition-colors h-full">
+                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                  Next Article →
+                </div>
+                <h3 className="font-semibold group-hover:text-primary transition-colors line-clamp-2">
+                  {nextPost.title}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2 line-clamp-1">
+                  {nextPost.summary}
+                </p>
+              </div>
+            </Link>
+          </BlurFade>
+        ) : (
+          <div />
+        )}
+      </div>
     </article>
   );
 };
