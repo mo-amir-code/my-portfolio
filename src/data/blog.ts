@@ -65,7 +65,7 @@ export function getPost(slug: string): Promise<IBlogDocument | null> {
     },
     ["blog-post", slug],
     {
-      revalidate: 60 * 60 * 24 * 24, // 24 hours
+      revalidate: 60 * 60 * 24, // 24 hours
     }
   );
 
@@ -104,7 +104,7 @@ export const getBlogPosts = unstable_cache(
   },
   ["blog-posts"],
   {
-    revalidate: 60 * 60 * 24 * 24, // 24 hours
+    revalidate: 60 * 60 * 24, // 24 hours
     tags: ["blog-posts"],
   }
 );

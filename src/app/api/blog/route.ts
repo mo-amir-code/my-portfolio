@@ -23,6 +23,10 @@ export async function POST(request: Request) {
             return NextResponse.json({ status: 200, message: "Blog updated successfully", data: { blog } })
         }
         const blog = await Blog.create(data);
+
+        // revalidate after creating a new article
+        revalidateTag("blog-posts")
+
         return NextResponse.json({ status: 201, message: "Blog created successfully", data: { blog } })
     } catch (error) {
         return NextResponse.json({ status: 500, message: "Server error" })

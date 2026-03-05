@@ -38,9 +38,6 @@ import UploadedImagesManager, {
 const BlogWriter = () => {
   const [code, setCode] = useState<string>("");
   const [to, setTO] = useState<ReturnType<typeof setTimeout> | null>(null);
-  const [contentTO, setContentTO] = useState<ReturnType<
-    typeof setTimeout
-  > | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [isSlugExist, setIsSlugExist] = useState<boolean | null>(null);
   const imgRef = useRef<HTMLInputElement>(null);
@@ -53,7 +50,6 @@ const BlogWriter = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const blogId = searchParams.get("blogId");
-  const localBlogId = `content-${blogId}`;
 
   // Preview width mappings
   const previewWidthMap = {
@@ -216,19 +212,6 @@ const BlogWriter = () => {
       el.focus();
     });
   }, [code]);
-
-  const handleToPersistContent = useCallback(
-    (code: string) => {
-      if (contentTO) {
-        clearTimeout(contentTO);
-      }
-      const to = setTimeout(() => {
-        setWithExpiry(localBlogId, code, 1000 * 60 * 60 * 72);
-      }, 5000);
-      setContentTO(to);
-    },
-    [code, contentTO, localBlogId, setContentTO, setWithExpiry]
-  );
 
   const validateForm = useCallback(() => {
     const newErrors: typeof errors = {};
@@ -431,13 +414,11 @@ const BlogWriter = () => {
   }, [blogId]);
 
   const handleToDeletePersistedBlogContent = useCallback(() => {
-    // Remove old persisted content
-    removeWithKey(localBlogId);
     // Remove draft
     removeDraftArticle(blogId);
     // Reload from server
     fetchBlog();
-  }, [localBlogId, blogId, fetchBlog]);
+  }, [blogId, fetchBlog]);
 
   useEffect(() => {
     if (blogId) {
@@ -719,7 +700,6 @@ const BlogWriter = () => {
                   onChange={(e) => {
                     setCode(e.target.value);
                     setHasUnsavedChanges(true);
-                    handleToPersistContent(e.target.value);
                   }}
                   disabled={isLoading}
                   className="flex-1 px-4 py-3 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 font-mono text-sm resize-none"
