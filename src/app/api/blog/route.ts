@@ -19,6 +19,7 @@ export async function POST(request: Request) {
             // revalidating
             revalidatePath(`/blog/${blog?.slug}`)
             revalidateTag("blog-posts")
+            revalidatePath("/sitemap.xml") // Revalidate sitemap when article is updated
 
             return NextResponse.json({ status: 200, message: "Blog updated successfully", data: { blog } })
         }
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
 
         // revalidate after creating a new article
         revalidateTag("blog-posts")
+        revalidatePath("/sitemap.xml") // Revalidate sitemap when article is updated
 
         return NextResponse.json({ status: 201, message: "Blog created successfully", data: { blog } })
     } catch (error) {

@@ -104,7 +104,7 @@ export const getBlogPosts = unstable_cache(
   },
   ["blog-posts"],
   {
-    revalidate: 60 * 60 * 24, // 24 hours
+    revalidate: 60 * 5, // 5 minutes
     tags: ["blog-posts"],
   }
 );
