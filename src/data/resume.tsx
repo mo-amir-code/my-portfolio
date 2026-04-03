@@ -4,7 +4,7 @@ import { HomeIcon } from "lucide-react";
 export const DATA = {
   name: "Mo Amir",
   initials: "MA",
-  url: "https://moamir.cloud",
+  url: "https://www.moamir.cloud",
   location: "Greater Noida",
   locationLink:
     "https://www.google.com/maps/place/Greater+Noida,+Uttar+Pradesh",
